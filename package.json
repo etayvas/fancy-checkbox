@@ -1,0 +1,35 @@
+{
+  "name": "base cyclejs template with es6, webpack, sass",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "cycle-scripts": "1.1.0",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "webpack": "^3.2.0",
+    "webpack-dev-server": "^2.5.1"
+  },
+  "dependencies": {
+    "@cycle/dom": "^17.6.0",
+    "@cycle/run": "^3.1.0",
+    "css-loader": "^0.28.4",
+    "style-loader": "^0.18.2",
+    "typescript": "^2.3.4",
+    "xstream": "^10.8.0"
+  },
+  "scripts": {
+    "start": "cycle-scripts start",
+    "test": "cycle-scripts test",
+    "build": "cycle-scripts build",
+    "eject": "cycle-scripts eject"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
