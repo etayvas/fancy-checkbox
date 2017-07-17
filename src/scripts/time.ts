@@ -1,5 +1,4 @@
 import xs from 'xstream'
-import {run} from '@cycle/run'
 import {makeDOMDriver, DOMSource, VNode, div, h1} from '@cycle/dom'
 
 interface TimeSources {

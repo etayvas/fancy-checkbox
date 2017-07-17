@@ -14,8 +14,8 @@ interface AppSinks {
 
 function App (sources: AppSources): AppSinks {
 
-     const type = "es6"
-     setTimeout(() => alert(`${type} enabled!!!`), 300)
+    //  const type = "es6"
+    //  setTimeout(() => alert(`${type} enabled!!!`), 300)
 
     const vtree$ = xs.of(
         div('Cycle.js app')
