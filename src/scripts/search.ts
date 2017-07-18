@@ -24,6 +24,14 @@ function setTrack(res: any){
     return trackList
 }
 
+function setUrl(query:String) {
+    return {
+        url: "https://api.soundcloud.com/tracks?q="+query+"&limit=6&linked_partitioning=1&offset=6&format=json&client_id=ggX0UomnLs0VmW7qZnCzw",
+        category: 'tracks',
+        method: 'GET'
+    }
+}
+
 function Search (sources: SearchSources): SearchSinks {
 
     const clickedInput$ = sources.dom.select(".search-input").events("keyup")
@@ -35,15 +43,28 @@ function Search (sources: SearchSources): SearchSinks {
             .mapTo(true)
             .startWith(false)
 
-        
-    , request$ = clickedGo$
-        .map(() => {
-            return {
-                url: "https://api.soundcloud.com/tracks?q=asd&limit=6&linked_partitioning=1&offset=6&format=json&client_id=ggX0UomnLs0VmW7qZnCzw",
-                category: 'tracks',
-                method: 'GET'
-            };
+    , request$ = xs.combine(clickedGo$, clickedInput$)
+        .map(([click,input]) => {
+            // click
+            // ? ( setUrl(input))
+            // : ( setUrl(input) )
+
+            if(click){
+                return setUrl(input)
+            } else{
+                return setUrl(input)
+            }
+
         })
+
+    // , request2$ = clickedGo$
+    //     .map(() => {
+    //         return {
+    //             url: "https://api.soundcloud.com/tracks?q=asd&limit=6&linked_partitioning=1&offset=6&format=json&client_id=ggX0UomnLs0VmW7qZnCzw",
+    //             category: 'tracks',
+    //             method: 'GET'
+    //         };
+    //     })
 
     , response$ = sources.http.select('tracks')
         .flatten()
