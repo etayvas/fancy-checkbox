@@ -1,18 +1,27 @@
 import xs from "xstream"
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
-/////import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
+import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import { GetTracks } from  './sc'
 
 declare const SC: any
 
 interface SearchSources {
     dom: DOMSource
-    ///////http: HTTPSource
+    http: HTTPSource
 }
 
 interface SearchSinks {
     dom: xs<VNode>
-////    http: xs<RequestOptions>
+    http: xs<RequestOptions>
+}
+
+function setTrack(res: any){
+    const items = res.map((item:any, index:number) => {
+        console.log(item.title)
+        return div('.track-'+index, item.title)
+    })
+    , trackList = div('.track-list',items)
+    return trackList
 }
 
 function Search (sources: SearchSources): SearchSinks {
@@ -20,47 +29,64 @@ function Search (sources: SearchSources): SearchSinks {
     const clickedInput$ = sources.dom.select(".search-input").events("keyup")
                 .map(event => (event.target as HTMLInputElement).value)
                 //.filter(input => input !== "")
-                .startWith("test").debug()
+                .startWith("")
 
-    const clickedGo$ = sources.dom.select(".search-go").events("click")
+    , clickedGo$ = sources.dom.select(".search-go").events("click")
             .mapTo(true)
             .startWith(false)
 
+        
+    , request$ = clickedGo$
+        .map(() => {
+            return {
+                url: "https://api.soundcloud.com/tracks?q=asd&limit=6&linked_partitioning=1&offset=6&format=json&client_id=ggX0UomnLs0VmW7qZnCzw",
+                category: 'tracks',
+                method: 'GET'
+            };
+        })
 
-    const getTrack$ = xs.combine(clickedGo$, clickedInput$)
-            .map(([clickedGo, clickedInput]) => {
-
-                return div('.search-results-holder',[
-                        !clickedGo
-                        ?
-                          "[Nothing yet]"
-                        :
-                          div(".search-results",[
-                            //////////    getTracks(clickedInput, sources.http)
-                              , div(".search-recent","[Recent searchs here]")
-                          ])
-
+    , response$ = sources.http.select('tracks')
+        .flatten()
+        .map(res => res.body.collection).debug('res.body.collection')
+        .startWith(null)
+        .map(result => {
+                return div('.response', [
+                  result === null
+                  ? null
+                  : div('.track-list', [
+                      setTrack(result)
                     ])
-            })
-
-    const vtree$ = xs.from(getTrack$)
-            .map((drawSearch) => {
-                return div(".search_holder", [
-                    div(".search-area",[
-                          div('.search-holder',[
-                                input('.search-input', "Search")
-                              , button('.search-go', "Go")
-                          ])
-                    ])
-                  , drawSearch
                 ])
             })
 
+    , vtree$ = xs.combine(clickedGo$, clickedInput$, response$)
+            .map(([clickedGo, clickedInput, responseDOM]) => {
+                return div("main-search",[
+                    div(".search_holder", [
+                        div(".search-area",[
+                              div('.search-holder',[
+                                    input('.search-input', "Search")
+                                  , button('.search-go', "Go")
+                              ])
+                        ])
+                    ])
+                    ,div('.search-results-holder',[
+                            !clickedGo
+                            ?
+                              "[Nothing yet]"
+                            :
+                              div(".search-results",[
+                                    responseDOM
+                                  , div(".search-recent","[Recent searchs here]")
+                              ])
 
+                        ])
+                ])
+            })
 
-    const sinks = {
+    , sinks = {
             dom: vtree$
-    //      , http: sources.http
+          , http: request$
     }
     return sinks
 }

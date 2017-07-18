@@ -10,8 +10,6 @@ import Search from  './scripts/search'
 import Actions from  './scripts/actions'
 import Image from  './scripts/image'
 
-declare const SC: any
-
 namespace Sources {
     export interface dom {
         dom: DOMSource
@@ -33,63 +31,34 @@ interface MainSources extends Sources.dom, Sources.http{}
 
 type MainSinks = {
        dom: xs<VNode>
-
+       http: Stream<RequestOptions>
 }
 
 function main (sources: MainSources): MainSinks {
 
     console.log(person.firstName + ' ' + person.lastName);
 
-
-    const request$ = sources.dom.select('.search-go').events('click')
-      .map(() => {
-        //   const setupURL = SC.get('/tracks',{
-        //               q: "britney"
-        //               , limit: 1// sources.limit,
-        //               , linked_partitioning: 1
-        //               , offset: false ? 0 + 4: 4
-        //           })
-        //           console.debug(setupURL._result)
-        return {
-          url: "https://api.soundcloud.com/tracks?q=asd&limit=6&linked_partitioning=1&offset=6&format=json&client_id=ggX0UomnLs0VmW7qZnCzw",
-          category: 'tracks',
-          method: 'GET'
-        };
-      });
-
-      const vtreeHttp$ = sources.http.select('tracks')
-        .flatten()
-        .map(res => res.body).debug('123')
-        .startWith(null)
-        .map(result =>
-          div([
-            //h2('.label', `Random number from server: ${result.number}`)
-            console.dir(result)
-        ])
-    )
-
     const app$  = App({dom: sources.dom})
         , timer$ = Time({dom: sources.dom})
-        , search$ = Search({dom: sources.dom})
+        , search$ = Search({dom: sources.dom, http: sources.http})
         , actions$ = Actions({dom: sources.dom})
         , image$ = Image({dom: sources.dom})
         //, recentSearch$ = RecentSearch({dom: sources.dom})
 
-        , dom$ = xs.combine(app$.dom, timer$.dom, search$.dom, actions$.dom, image$.dom, vtreeHttp$)
-            .map(([appDom, timerDom, searchDom, actionsDom, imageDom, vtreeHttp]) => {
+        , dom$ = xs.combine(app$.dom, timer$.dom, search$.dom, actions$.dom, image$.dom, search$.http)
+            .map(([appDom, timerDom, searchDom, actionsDom, imageDom]) => {
                 return div(".main-holder", [
                       appDom
                     , timerDom
                     , searchDom
                     , actionsDom
                     , imageDom
-                    , vtreeHttp
                     ])
                 }
             )
         , sinks = {
                    dom: dom$
-                 , http: request$
+                 , http: search$.http
           }
     return sinks
 }
