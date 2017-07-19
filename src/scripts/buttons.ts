@@ -1,5 +1,5 @@
 import xs from "xstream"
-import {makeDOMDriver, DOMSource, VNode, div} from '@cycle/dom'
+import {makeDOMDriver, DOMSource, VNode, div, button} from '@cycle/dom'
 
 interface ActionSources {
     dom: DOMSource
@@ -14,9 +14,9 @@ function Action (sources: ActionSources): ActionSinks {
 
     const vtree$ = xs.of(
         div(".actions-area",[
-                div('.action-next',"Next")
-              , div('.action-list',"List")
-              , div('.action-tile',"Tile")
+                button('.action-next',"Next")
+              , button('.action-list',"List")
+              , button('.action-tile',"Tile")
         ])
     )
     const sinks = {

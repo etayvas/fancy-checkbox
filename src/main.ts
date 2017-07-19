@@ -7,7 +7,7 @@ import Time from  './scripts/time'
 import { person } from "./scripts/person"
 //import { Search, RecentSearch } from  './scripts/search'
 import Search from  './scripts/search'
-import Actions from  './scripts/actions'
+import Buttons from  './scripts/buttons'
 import Image from  './scripts/image'
 
 namespace Sources {
@@ -41,17 +41,17 @@ function main (sources: MainSources): MainSinks {
     const app$  = App({dom: sources.dom})
         , timer$ = Time({dom: sources.dom})
         , search$ = Search({dom: sources.dom, http: sources.http})
-        , actions$ = Actions({dom: sources.dom})
+        , buttons$ = Buttons({dom: sources.dom})
         , image$ = Image({dom: sources.dom})
         //, recentSearch$ = RecentSearch({dom: sources.dom})
 
-        , dom$ = xs.combine(app$.dom, timer$.dom, search$.dom, actions$.dom, image$.dom, search$.http)
-            .map(([appDom, timerDom, searchDom, actionsDom, imageDom]) => {
+        , dom$ = xs.combine(app$.dom, timer$.dom, search$.dom, buttons$.dom, image$.dom, search$.http)
+            .map(([appDom, timerDom, searchDom, buttonsDom, imageDom]) => {
                 return div(".main-holder", [
                       appDom
                     , timerDom
                     , searchDom
-                    , actionsDom
+                    , buttonsDom
                     , imageDom
                     ])
                 }
