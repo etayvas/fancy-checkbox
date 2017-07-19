@@ -6,8 +6,15 @@ body {
 
     }
 }
+#app {
+    text-align: center;
+}
+.track-list {
+	padding: 20px 0;
+}
 
 .track-data{
+    padding: 20px 0;
     background-color: white;
     color: black;
 }

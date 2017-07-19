@@ -19,14 +19,18 @@ interface SearchSinks {
 function Search (sources: SearchSources): SearchSinks {
 
     const typedSearch$ = sources.dom.select(".search-input").events("keyup")
-            .map(event => (event.target as HTMLInputElement).value)
-            .startWith("")
-        , clickOnTrack$ = sources.dom.select(".track-list div").events("click")
-            .map(event => (event.target as HTMLInputElement).id)
-            .startWith("")
-        , clickOnNext$ = sources.dom.select(".button-next").events("click")
-            .mapTo(true)
-            .startWith(false)
+        .map(event => (event.target as HTMLInputElement).value)
+        .startWith("")
+    , clickOnTrack$ = sources.dom.select(".track-list div").events("click")
+        .map(event => (event.target as HTMLInputElement).id)
+        .startWith("")
+    , clickOnNext$ = sources.dom.select(".button-next").events("click")
+        .mapTo(true)
+        .startWith(false)
+
+    , clickOnPlay$ = sources.dom.select(".play").events("click")
+        .mapTo(true)
+        .startWith(false)
 
     , request$ = xs.combine(typedSearch$, clickOnTrack$, clickOnNext$)
         .map(([input, track, next]) => {

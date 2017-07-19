@@ -48,7 +48,6 @@ export function SetUrl(query:String, trackId: String, next: boolean) {
     }
 }
 
-
 interface tracksArray {
     type: string
 }
@@ -61,16 +60,21 @@ export function SetTrackList(resCollection:Array<tracksArray>, next_href: string
     , trackList = div('.track-list',items)
      return trackList
 }
-
+// 
+// interface TrackData extends ScSources{
+//     TrackData: any
+// }
 //?SC.stream
+//function Search (sources: SearchSources): SearchSinks {
 export function DrawAndStreamTrack(TrackData: any){
-    SC.stream('/tracks/'+TrackData.id).then(function(player: any){
-	  player.play();
-	});
+    // SC.stream('/tracks/'+TrackData.id).then(function(player: any){
+	//   player.play();
+	// });
     return div('.track-data',[
-          div(".title",TrackData.title)
+          div(".play","[PLAY TRACK]")
+        , div(".title",TrackData.title)
         //, div(".description",TrackData.description)
         , div(".created",TrackData.created_at)
-        , TrackData.artwork_url ? img(".artwork",{attrs: {src: TrackData.artwork_url}}) : "[NO IMAGE]"
+        , TrackData.artwork_url ? img(".artwork",{attrs: {src: TrackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
     ])
 }
