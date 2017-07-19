@@ -44,34 +44,24 @@ function Search (sources: SearchSources): SearchSinks {
         .map(res => res.body).debug('res.body')
         .startWith(null)
         .map(result => {
-                return div('.response', [
-                  result === null
-                  ? null
-                  : div('.track-list', [
-                      SetTrack(result.collection, result.next_href)
-                    ])
-                ])
+            return result === null
+                ? null
+                : SetTrack(result.collection, result.next_href)
             })
 
     , vtree$ = xs.combine(typedSearch$, response$)
             .map(([typedSearch, responseDOM]) => {
-                return div("main-search",[
-                    div(".search_holder", [
-                        div(".search-area",[
-                              div('.search-holder',[
-                                    input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}}, "Search")
-                              ])
-                        ])
+                return div(".search-holder",[
+                    div('.search-field',[
+                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}})
                     ])
-                    ,div('.search-results-holder',[
+                    ,div('.search-results',[
                             !typedSearch
                             ?
                               "[Nothing yet]"
                             :
-                              div(".search-results",[
-                                    responseDOM
-                                  , div(".search-recent","[Recent searchs here]")
-                              ])
+                              responseDOM
+                            , div(".search-recent","[Recent searchs here]")
                         ])
                     ])
                 })

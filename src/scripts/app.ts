@@ -18,7 +18,7 @@ function App (sources: AppSources): AppSinks {
     //  setTimeout(() => alert(`${type} enabled!!!`), 300)
 
     const vtree$ = xs.of(
-        div('Cycle.js app')
+        div('SC CycleJS')
     )
     const sinks = {
         dom: vtree$

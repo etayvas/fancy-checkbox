@@ -10,13 +10,13 @@ interface ActionSinks {
 }
 
 
-function Action (sources: ActionSources): ActionSinks {
+function Button (sources: ActionSources): ActionSinks {
 
     const vtree$ = xs.of(
-        div(".actions-area",[
-                button('.action-next',"Next")
-              , button('.action-list',"List")
-              , button('.action-tile',"Tile")
+        div(".buttons-area",[
+                button('.button-next',"Next")
+              , button('.button-list',"List")
+              , button('.button-tile',"Tile")
         ])
     )
     const sinks = {
@@ -24,4 +24,4 @@ function Action (sources: ActionSources): ActionSinks {
     }
     return sinks
 }
-export default Action
+export default Button
