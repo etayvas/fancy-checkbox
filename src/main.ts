@@ -47,6 +47,7 @@ function main (sources: MainSources): MainSinks {
                 return div(".main-holder", [
                       appDom
                     , searchDom
+                    , div(".search-recent","[Recent searchs here]")
                     , buttonsDom
                     , imageDom
                     ])
