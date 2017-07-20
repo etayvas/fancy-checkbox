@@ -1,9 +1,8 @@
 import xs from "xstream"
 import {makeDOMDriver, DOMSource, VNode, div, img} from '@cycle/dom'
 
-
 declare const SC: any
-let offset: any
+let offset: number
 
 interface ScSources {
     dom: DOMSource
@@ -12,59 +11,7 @@ interface ScSources {
 interface ScSinks {
     dom: xs<VNode>
 }
-//
-// function getParameterByName(name: any, url: any): any {
-// 	if (!url) url = window.location.href;
-// 	name = name.replace(/[\[\]]/g, "\\$&");
-// 	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-// 		results = regex.exec(url);
-// 	if (!results) return null;
-// 	if (!results[2]) return '';
-// 	return decodeURIComponent(results[2].replace(/\+/g, " "));
-// };
 
-export function SetUrl(query:String, trackId: String, next: boolean) {
-    let cid= "ggX0UomnLs0VmW7qZnCzw"
-    , limit = 6
-    , offset = 0
-    , endPoint = "tracks"
-    , category = "tracks"
-    , urlParams = "&q="+query+"&limit="+limit+"&linked_partitioning=1&offset="+offset
-
-    if(next){
-          offset = 6 //need to extract from url or sum the previous +6
-        , urlParams = "&q="+query+"&limit="+limit+"&linked_partitioning=1&offset="+offset
-    }
-    if(trackId !== ""){
-        endPoint = endPoint+"/"+trackId
-        category = "single-track"
-        urlParams = ""
-    }
-    return {
-          url: "https://api.soundcloud.com/"+endPoint+"?format=json&client_id="+cid+urlParams
-        , category: category
-        //, method: 'GET' //default
-    }
-}
-
-interface tracksArray {
-    type: string
-}
-
-//why its working? String or string?
-export function SetTrackList(resCollection:Array<tracksArray>, next_href: string){
-    const items = resCollection.map((item:any, index:number) => {
-        return div('.track-'+index, {attrs: {id: item.id}}, item.title)
-    })
-    , trackList = div('.track-list',items)
-     return trackList
-}
-
-function TrackStream(TrackId: string){
-    SC.stream('/tracks/'+TrackId).then(function(player: any){
-	  player.play();
-	});
-}
 interface TrackData {
     id: string
     title: string
@@ -72,7 +19,14 @@ interface TrackData {
     artwork_url: string
     streamStatus: boolean
 }
-function TrackDom(TrackData: TrackData, isStreaming:boolean){
+
+function TrackStream(TrackId: String){
+    SC.stream('/tracks/'+TrackId).then(function(player: any){
+	  player.play();
+	});
+}
+
+function TrackDom(TrackData: TrackData, isStreaming: Boolean){
     return div('.track-data',[
           div(".play",[
               !isStreaming
@@ -87,7 +41,33 @@ function TrackDom(TrackData: TrackData, isStreaming:boolean){
     ])
 }
 
-export function SetTrack(TrackData: any, streamStatus: boolean){
+export function SetUrl(query:string, trackId: string, next: number) {
+    let cid= "ggX0UomnLs0VmW7qZnCzw"
+    , limit = 6
+    , endPoint = trackId === "" ? "tracks" : ("tracks/"+trackId)
+    , category = trackId === "" ? "tracks-list" : "single-track"
+    , offset = next > 0 ? next : 0
+    , urlParams = trackId === "" ? `&q=${query}&limit=${limit}&linked_partitioning=1&offset=${offset}` : ""
+
+    return {
+          url: "https://api.soundcloud.com/"+endPoint+"?format=json&client_id="+cid+urlParams
+        , category: category
+    }
+}
+
+interface tracksArray {
+    type: string
+}
+//why its working (any)? String or string?
+export function SetTrackList(resCollection: Array<tracksArray>, next_href: string){
+    const items = resCollection.map((item: any, index: Number) => {
+        return div('.track-'+index, {attrs: {id: item.id}}, item.title)
+    })
+    , trackList = div('.track-list',items)
+     return trackList
+}
+
+export function SetTrack(TrackData: any, streamStatus: Boolean){
     streamStatus
     ? TrackStream(TrackData.id)
     : ""
@@ -95,5 +75,4 @@ export function SetTrack(TrackData: any, streamStatus: boolean){
     return TrackData === ""
         ? div()
         : TrackDom(TrackData, streamStatus)
-
 }

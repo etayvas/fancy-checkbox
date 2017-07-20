@@ -2,11 +2,8 @@ import xs, {Stream} from "xstream"
 import {run} from '@cycle/run'
 import {makeDOMDriver,DOMSource, VNode, div} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import App from  './scripts/app'
-import { person } from './scripts/person'
 import Search from  './scripts/search'
 import Buttons from  './scripts/buttons'
-import Image from  './scripts/image'
 
 namespace Sources {
     export interface dom {
@@ -34,22 +31,17 @@ type MainSinks = {
 
 function main (sources: MainSources): MainSinks {
 
-    console.log(person.firstName + ' ' + person.lastName);
-
-    const app$  = App({dom: sources.dom})
-        , search$ = Search({dom: sources.dom, http: sources.http})
+    const search$ = Search({dom: sources.dom, http: sources.http})
         , buttons$ = Buttons({dom: sources.dom})
-        , image$ = Image({dom: sources.dom})
         //, recentSearch$ = RecentSearch({dom: sources.dom})
 
-        , dom$ = xs.combine(app$.dom, search$.dom, buttons$.dom, image$.dom, search$.http)
-            .map(([appDom, searchDom, buttonsDom, imageDom]) => {
+        , dom$ = xs.combine(search$.dom, buttons$.dom)
+            .map(([searchDom, buttonsDom]) => {
                 return div(".main-holder", [
-                      appDom
+                    , div('SC CycleJS')
                     , searchDom
                     , div(".search-recent","[Recent searchs here]")
                     , buttonsDom
-                    , imageDom
                     ])
                 }
             )

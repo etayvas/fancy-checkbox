@@ -15,21 +15,30 @@ interface SearchSinks {
     http: xs<RequestOptions>
 }
 
-
 function Search (sources: SearchSources): SearchSinks {
 
     const typedSearch$ = sources.dom.select(".search-input").events("keyup")
         .map(event => (event.target as HTMLInputElement).value)
         .startWith("")
+
+    //need to remember the previous id and if differ we should simulate a click on clickOnPlay$
     , clickOnTrack$ = sources.dom.select(".track-list div").events("click")
         .map(event => (event.target as HTMLInputElement).id)
         .startWith("")
+        //.fold(prev => !event, false).debug()
+        //.remember().debug("remember")
+
+    //need to reset the counter once the typedSearch$ pressed
     , clickOnNext$ = sources.dom.select(".button-next").events("click")
-        .mapTo(true)
-        .startWith(false)
+        .fold((x) => x + 6, 0)
+        .map((count) => {
+            return (count+6)
+        })
+
     , clickOnPlay$ = sources.dom.select(".play").events("click")
-        .mapTo(true)
-        .startWith(false)
+        .fold(prev => !prev, false)
+        // .mapTo(true)
+        // .startWith(false)
 
     , request$ = xs.combine(typedSearch$, clickOnTrack$, clickOnNext$)
         .map(([input, track, next]) => {
@@ -39,7 +48,7 @@ function Search (sources: SearchSources): SearchSinks {
                 : httpReq = { url: "", category: ''}
         })
 
-    , responseTracks$ = sources.http.select('tracks')
+    , responseTrackList$ = sources.http.select('tracks-list')
         .flatten()
         .map(res => res.body)
         .startWith(null)
@@ -64,7 +73,7 @@ function Search (sources: SearchSources): SearchSinks {
                 return SetTrack(drawTrack, playStatus)
             })
 
-    , vtree$ = xs.combine(typedSearch$, responseTracks$, drawTrack$)
+    , vtree$ = xs.combine(typedSearch$, responseTrackList$, drawTrack$)
             .map(([typedSearch, trackListDOM, drawTrackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
