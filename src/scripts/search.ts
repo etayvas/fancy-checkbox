@@ -1,7 +1,7 @@
 import xs from "xstream"
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetUrl, SetTrackList, DrawAndStreamTrack  } from  './sc'
+import { SetUrl, SetTrackList, SetTrack } from  './sc'
 
 declare const SC: any
 
@@ -27,26 +27,16 @@ function Search (sources: SearchSources): SearchSinks {
     , clickOnNext$ = sources.dom.select(".button-next").events("click")
         .mapTo(true)
         .startWith(false)
-
     , clickOnPlay$ = sources.dom.select(".play").events("click")
         .mapTo(true)
         .startWith(false)
 
     , request$ = xs.combine(typedSearch$, clickOnTrack$, clickOnNext$)
         .map(([input, track, next]) => {
-            // let httpReq = {}
-            // input
-            // ? httpReq = SetUrl(input, track, next)
-            // : httpReq = { url: "", category: '', method: ''}
-            // return httpReq
-
             let httpReq = { url: "", category: ''}
-            if(input){
-                return httpReq = SetUrl(input, track, next)
-            } else{
-                //default
-                return httpReq
-            }
+            return input
+                ? httpReq = SetUrl(input, track, next)
+                : httpReq = { url: "", category: ''}
         })
 
     , responseTracks$ = sources.http.select('tracks')
@@ -55,7 +45,7 @@ function Search (sources: SearchSources): SearchSinks {
         .startWith(null)
         .map(result => {
             return result === null
-                ? null
+                ? result
                 : SetTrackList(result.collection, result.next_href)
             })
 
@@ -65,12 +55,17 @@ function Search (sources: SearchSources): SearchSinks {
         .startWith(null)
         .map(TrackData => {
             return TrackData === null
-                ? null
-                : DrawAndStreamTrack(TrackData)
+                ? ""
+                : TrackData
             })
 
-    , vtree$ = xs.combine(typedSearch$, responseTracks$, responseSingleTrack$)
-            .map(([typedSearch, trackListDOM, trackDataDOM]) => {
+    , drawTrack$ = xs.combine(responseSingleTrack$, clickOnPlay$)
+            .map(([drawTrack, playStatus]) => {
+                return SetTrack(drawTrack, playStatus)
+            })
+
+    , vtree$ = xs.combine(typedSearch$, responseTracks$, drawTrack$)
+            .map(([typedSearch, trackListDOM, drawTrackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
                           input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}})
@@ -81,7 +76,7 @@ function Search (sources: SearchSources): SearchSinks {
                               "[Nothing typed yet]"
                             :
                                 trackListDOM
-                              , trackDataDOM
+                              , drawTrackDOM
                         ])
                     ])
                 })

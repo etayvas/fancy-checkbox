@@ -23,7 +23,6 @@ interface ScSinks {
 // 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 // };
 
-
 export function SetUrl(query:String, trackId: String, next: boolean) {
     let cid= "ggX0UomnLs0VmW7qZnCzw"
     , limit = 6
@@ -60,21 +59,41 @@ export function SetTrackList(resCollection:Array<tracksArray>, next_href: string
     , trackList = div('.track-list',items)
      return trackList
 }
-// 
-// interface TrackData extends ScSources{
-//     TrackData: any
-// }
-//?SC.stream
-//function Search (sources: SearchSources): SearchSinks {
-export function DrawAndStreamTrack(TrackData: any){
-    // SC.stream('/tracks/'+TrackData.id).then(function(player: any){
-	//   player.play();
-	// });
+
+function TrackStream(TrackId: string){
+    SC.stream('/tracks/'+TrackId).then(function(player: any){
+	  player.play();
+	});
+}
+interface TrackData {
+    id: string
+    title: string
+    created_at: string
+    artwork_url: string
+    streamStatus: boolean
+}
+function TrackDom(TrackData: TrackData, isStreaming:boolean){
     return div('.track-data',[
-          div(".play","[PLAY TRACK]")
+          div(".play",[
+              !isStreaming
+              ? "[PLAY TRACK]"
+              : img(".playing-gif",{attrs: {src: "http://1.bp.blogspot.com/-EzUl5CilcRo/VSWnuef153I/AAAAAAAAEBQ/7SuEWA_-Obg/s600/dj-music-mix-BenjaminMadeira-com.gif"}}, "[PLAYING TRACK]")
+        ]
+      )
         , div(".title",TrackData.title)
         //, div(".description",TrackData.description)
         , div(".created",TrackData.created_at)
         , TrackData.artwork_url ? img(".artwork",{attrs: {src: TrackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
     ])
+}
+
+export function SetTrack(TrackData: any, streamStatus: boolean){
+    streamStatus
+    ? TrackStream(TrackData.id)
+    : ""
+
+    return TrackData === ""
+        ? div()
+        : TrackDom(TrackData, streamStatus)
+
 }
