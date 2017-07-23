@@ -1,34 +1,14 @@
-import xs, {Stream} from "xstream"
+import xs from 'xstream'
 import {run} from '@cycle/run'
+import { Sources, Sinks } from './scripts/definitions'
 import {makeDOMDriver,DOMSource, VNode, div} from '@cycle/dom'
-import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
+import {makeHTTPDriver, HTTPSource, RequestOptions} from '@cycle/http'
 import Search from  './scripts/search'
 import Buttons from  './scripts/buttons'
 import './css/main.scss'
 
-namespace Sources {
-    export interface dom {
-        dom: DOMSource
-    }
-    export interface http {
-        http: HTTPSource
-    }
-}
-namespace Sinks {
-    export interface dom {
-        dom: xs<VNode>
-    }
-    export interface http {
-        http: xs<RequestOptions>
-    }
-}
-
 interface MainSources extends Sources.dom, Sources.http{}
-
-type MainSinks = {
-       dom: xs<VNode>
-       http: Stream<RequestOptions>
-}
+interface MainSinks extends Sinks.dom,Sinks.http {}
 
 function main (sources: MainSources): MainSinks {
 

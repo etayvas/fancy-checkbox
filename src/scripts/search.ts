@@ -15,6 +15,7 @@ interface SearchSinks {
     http: xs<RequestOptions>
 }
 
+
 /*user intended actions*/
 function intent(sources: SearchSources) {
   return {
@@ -40,19 +41,18 @@ function intent(sources: SearchSources) {
     };
 }
 
-// function model(actions : any) {
-//
-//  }
+
 
 function Search (sources: SearchSources): SearchSinks {
 
-    const actions = intent(sources)
-    //, state$ = model(actions)
 
+    const actions = intent(sources)
     , request$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$, actions.clickOnNext$)
-        .map(([input, track, next]) => {
-            return input ? SetUrl(input, track, next) : { url: "", category: ''}
-        })
+            .map(([input, track, next]) => {
+                return input ? SetUrl(input, track, next) : { url: "", category: ''}
+            })
+
+
 
     , responseTrackList$ = sources.http.select('tracks-list')
         .flatten()
