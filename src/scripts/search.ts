@@ -1,4 +1,5 @@
 import xs from "xstream"
+import debounce from 'xstream/extra/debounce'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import { SetUrl, SetTrackList, SetTrack } from  './sc'
@@ -21,6 +22,7 @@ function intent(sources: SearchSources) {
   return {
       typedSearch$: sources.dom.select(".search-input").events("keyup")
         .map(event => (event.target as HTMLInputElement).value)
+        .compose(debounce(800)) //delay when typing
         .startWith("")
 
     //need to remember the previous id and if differ we should simulate a click on clickOnPlay$
