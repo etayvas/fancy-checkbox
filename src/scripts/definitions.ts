@@ -1,6 +1,6 @@
 import xs from 'xstream'
 import {DOMSource, VNode} from '@cycle/dom'
-import {HTTPSource, RequestOptions} from "@cycle/http"
+import {HTTPSource, RequestOptions} from '@cycle/http'
 
 export namespace Sources {
     export interface dom {

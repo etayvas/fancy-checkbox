@@ -1,4 +1,4 @@
-import xs from "xstream"
+import xs from 'xstream'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, img} from '@cycle/dom'
 
@@ -39,7 +39,7 @@ function TrackDom(TrackData: TrackData, isStreaming: Boolean){
 export function SetUrl(query:string, trackId: string, next: number) {
     let cid= "ggX0UomnLs0VmW7qZnCzw"
     , limit = 6
-    , endPoint = trackId === "" ? "tracks" : ("tracks/"+trackId)
+    , endPoint = trackId === "" ? "tracks/" : ("tracks/"+trackId)
     , category = trackId === "" ? "tracks-list" : "single-track"
     , offset = next > 0 ? next : 0
     , urlParams = trackId === "" ? `&q=${query}&limit=${limit}&linked_partitioning=1&offset=${offset}` : ""

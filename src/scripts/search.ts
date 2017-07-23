@@ -1,15 +1,12 @@
-import xs from "xstream"
+import xs from 'xstream'
 import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import { SetUrl, SetTrackList, SetTrack } from  './sc'
 
-declare const SC: any
-
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
-
 
 /*user intended actions*/
 function intent(sources: SearchSources) {
@@ -37,13 +34,8 @@ function intent(sources: SearchSources) {
     };
 }
 
-
-
 function Search (sources: SearchSources): SearchSinks {
-
-
     const actions = intent(sources)
-
     , request$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$, actions.clickOnNext$)
             .filter(([input, track, next]) => input.length > 2) // filter if more than 2 chars
             .map(([input, track, next]) => {
