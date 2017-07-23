@@ -1,14 +1,9 @@
 import xs from "xstream"
+import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, button} from '@cycle/dom'
 
-interface ActionSources {
-    dom: DOMSource
-}
-
-interface ActionSinks {
-    dom: xs<VNode>
-}
-
+interface ActionSources extends Sources.dom {}
+interface ActionSinks extends Sinks.dom {}
 
 function Button (sources: ActionSources): ActionSinks {
 

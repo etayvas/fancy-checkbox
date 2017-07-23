@@ -1,20 +1,14 @@
 import xs from "xstream"
 import debounce from 'xstream/extra/debounce'
+import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import { SetUrl, SetTrackList, SetTrack } from  './sc'
 
 declare const SC: any
 
-interface SearchSources {
-    dom: DOMSource
-    http: HTTPSource
-}
-
-interface SearchSinks {
-    dom: xs<VNode>
-    http: xs<RequestOptions>
-}
+interface SearchSources extends Sources.dom,Sources.http {}
+interface SearchSinks extends Sinks.dom,Sinks.http {}
 
 
 /*user intended actions*/

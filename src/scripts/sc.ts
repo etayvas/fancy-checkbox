@@ -1,15 +1,11 @@
 import xs from "xstream"
+import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, img} from '@cycle/dom'
 
 declare const SC: any
 
-interface ScSources {
-    dom: DOMSource
-}
-
-interface ScSinks {
-    dom: xs<VNode>
-}
+interface ScSources extends Sources.dom {}
+interface ScSinks extends Sinks.dom {}
 
 interface TrackData {
     id: string
