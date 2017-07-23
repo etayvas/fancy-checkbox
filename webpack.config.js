@@ -6,7 +6,7 @@ const webpack = require('webpack')
 const config = {
     context: path.resolve(__dirname, './src')
     , entry: {
-        main: './main.ts',
+        main: './main.ts'
     }
     ,output: {
           path: path.resolve(__dirname, './dist')

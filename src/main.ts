@@ -4,6 +4,7 @@ import {makeDOMDriver,DOMSource, VNode, div} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import Search from  './scripts/search'
 import Buttons from  './scripts/buttons'
+import './css/main.scss'
 
 namespace Sources {
     export interface dom {
