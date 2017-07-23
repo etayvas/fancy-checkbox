@@ -2,7 +2,6 @@ import xs from "xstream"
 import {makeDOMDriver, DOMSource, VNode, div, img} from '@cycle/dom'
 
 declare const SC: any
-let offset: number
 
 interface ScSources {
     dom: DOMSource
@@ -59,7 +58,7 @@ interface tracksArray {
     type: string
 }
 //why its working (any)? String or string?
-export function SetTrackList(resCollection: Array<tracksArray>, next_href: string){
+export function SetTrackList(resCollection: Array<tracksArray>){
     const items = resCollection.map((item: any, index: Number) => {
         return div('.track-'+index, {attrs: {id: item.id}}, item.title)
     })

@@ -49,19 +49,19 @@ function Search (sources: SearchSources): SearchSinks {
 
 
     const actions = intent(sources)
+
     , request$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$, actions.clickOnNext$)
+            .filter(([input, track, next]) => input.length > 2) // filter if more than 2 chars
             .map(([input, track, next]) => {
-                return input ? SetUrl(input, track, next) : { url: "", category: ''}
+                return SetUrl(input, track, next)
             })
-
-
 
     , responseTrackList$ = sources.http.select('tracks-list')
         .flatten()
         .map(res => res.body)
         .startWith(null)
         .map(result => {
-            return result === null ? result : SetTrackList(result.collection, result.next_href)
+            return result === null ? result : SetTrackList(result.collection)
             })
 
     , responseSingleTrack$ = sources.http.select('single-track')
