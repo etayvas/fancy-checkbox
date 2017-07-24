@@ -22,11 +22,14 @@ function TrackStream(TrackId: String){
 }
 
 function TrackDom(TrackData: TrackData, isStreaming: Boolean){
+    let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
+        , icon_pause = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-pause-128.png"
+        
     return div('.track-data',[
           div(".play",[
               !isStreaming
-              ? "[PLAY TRACK]"
-              : img(".playing-gif",{attrs: {src: "http://1.bp.blogspot.com/-EzUl5CilcRo/VSWnuef153I/AAAAAAAAEBQ/7SuEWA_-Obg/s600/dj-music-mix-BenjaminMadeira-com.gif"}}, "[PLAYING TRACK]")
+              ? div(".paused",img(".stream-status",{attrs: {src: icon_play}}))
+              : div(".playing",img(".stream-status",{attrs: {src: icon_pause}}))
         ]
       )
         , div(".title",TrackData.title)
@@ -67,7 +70,7 @@ export function SetTrack(TrackData: any, streamStatus: Boolean){
     ? TrackStream(TrackData.id)
     : ""
 
-    return TrackData === ""
-        ? div()
+    return TrackData === null
+        ? div('.track-data','BOOM')
         : TrackDom(TrackData, streamStatus)
 }

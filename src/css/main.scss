@@ -9,19 +9,29 @@ body {
 #app {
     text-align: center;
 }
-.track-list {
-	padding: 20px 0;
+.search-results {
+    display: inline-flex;
+
+    .track-list {
+        padding: 25px;
+        align-self: flex-start;
+    }
+
+    .track-data {
+    	padding: 25px;
+    	background-color: white;
+    	color: black;
+    	width: 50%;
+
+        .stream-status{
+            max-width: 25px;
+            cursor:pointer;
+        }
+
+    }
 }
 
-.track-data{
-    padding: 20px 0;
-    background-color: white;
-    color: black;
-}
 
-.playing-gif{
-    max-width: 150px;
-}
 
 
 .actions-area{
