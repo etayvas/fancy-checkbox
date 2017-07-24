@@ -3,7 +3,7 @@ import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetTrackList, SetSingelTrack } from  './sc'
+import { SetList, SetTrack } from  './sc'
 
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
@@ -63,7 +63,7 @@ function Search (sources: SearchSources): SearchSinks {
         .startWith(null)
     , list$ = xs.combine(resList$, actions.typedSearch$)
         .map(([list, input]) => {
-            return list === null ? null : SetTrackList(list.collection)
+            return list === null ? null : SetList(list.collection)
         })
 
     , resTrack$ = sources.http.select('track')
@@ -72,7 +72,7 @@ function Search (sources: SearchSources): SearchSinks {
         .startWith(null)
     , track$ = xs.combine(resTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
         .map(([track, trackClick, playClick]) => {
-            return trackClick === "" ? null : SetSingelTrack(track, playClick)
+            return trackClick === "" ? null : SetTrack(track, playClick)
         })
 
     , vtree$ = xs.combine(actions.typedSearch$, list$, track$)

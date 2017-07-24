@@ -46,7 +46,7 @@ function TrackDom(TrackData: TrackData, isStreaming: boolean){
     ])
 }
 
-export function SetTrackList(resCollection: Item[]){
+export function SetList(resCollection: Item[]){
     playerExist !== undefined
     ? playerExist.pause()
     : ""
@@ -58,7 +58,7 @@ export function SetTrackList(resCollection: Item[]){
      return trackList
 }
 
-export function SetSingelTrack(TrackData: any, clickStatus: boolean){
+export function SetTrack(TrackData: any, clickStatus: boolean){
     ((playerExist === undefined && clickStatus) || (currentTrack !== TrackData.id))
     ? TrackStream(TrackData.id)
     : (clickStatus ? playerExist.play() : playerExist.pause())
