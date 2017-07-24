@@ -7,14 +7,6 @@ declare const SC: any
 interface ScSources extends Sources.dom {}
 interface ScSinks extends Sinks.dom {}
 
-interface TrackData {
-    id: string
-    title: string
-    created_at: string
-    artwork_url: string
-    streamStatus: boolean
-}
-
 let playerExist: any
 , currentTrack = ""
 function TrackStream(TrackId: string){
@@ -24,7 +16,16 @@ function TrackStream(TrackId: string){
         });
 }
 
-function TrackDom(TrackData: TrackData, isStreaming: Boolean){
+interface TrackData {
+    id: string
+    title: string
+    created_at: string
+    artwork_url: string
+    streamStatus: boolean
+}
+
+//is TrackData ok when partly
+function TrackDom(TrackData: TrackData, isStreaming: boolean){
     let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
         , icon_pause = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-pause-128.png"
 
@@ -42,35 +43,21 @@ function TrackDom(TrackData: TrackData, isStreaming: Boolean){
     ])
 }
 
-export function SetUrl(query:string, trackId: string, next: number) {
-    let cid= "ggX0UomnLs0VmW7qZnCzw"
-    , limit = 6
-    , endPoint = trackId === "" ? "tracks/" : ("tracks/"+trackId)
-    , category = trackId === "" ? "tracks-list" : "single-track"
-    , offset = next > 0 ? next : 0
-    , urlParams = trackId === "" ? `&q=${query}&limit=${limit}&linked_partitioning=1&offset=${offset}` : ""
-
-    return {
-          url: "https://api.soundcloud.com/"+endPoint+"?format=json&client_id="+cid+urlParams
-        , category: category
-    }
+interface Item {
+    id: number
+    title: string
 }
 
-interface tracksArray {
-    type: string
-}
-//why its working (any)? String or string?
-export function SetTrackList(resCollection: Array<tracksArray>){
-    const items = resCollection.map((item: any, index: Number) => {
+export function SetTrackList(resCollection: Item[]){
+    const items = resCollection.map((item, index: Number) => {
         return div('.track-'+index, {attrs: {id: item.id}}, item.title)
     })
     , trackList = div('.track-list',items)
      return trackList
 }
 
-export function SetTrack(TrackData: any, clickStatus: boolean){
-
-    (playerExist === undefined || currentTrack !== TrackData.id)
+export function SetSingelTrack(TrackData: any, clickStatus: boolean){
+    ((playerExist === undefined && clickStatus) || (currentTrack !== TrackData.id))
     ? TrackStream(TrackData.id)
     : (clickStatus ? playerExist.play() : playerExist.pause())
 

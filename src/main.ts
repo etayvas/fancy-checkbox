@@ -15,7 +15,6 @@ function main (sources: MainSources): MainSinks {
     const search$ = Search({dom: sources.dom, http: sources.http})
         , buttons$ = Buttons({dom: sources.dom})
         //, recentSearch$ = RecentSearch({dom: sources.dom})
-
         , dom$ = xs.combine(search$.dom, buttons$.dom)
             .map(([searchDom, buttonsDom]) => {
                 return div(".main-holder", [

@@ -3,7 +3,7 @@ import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetUrl, SetTrackList, SetTrack } from  './sc'
+import { SetTrackList, SetSingelTrack } from  './sc'
 
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
@@ -29,18 +29,14 @@ function intent(sources: SearchSources) {
         })
     , clickOnPlay$: sources.dom.select(".play").events("click")
         .fold(prev => !prev, false)
-        // .mapTo(true)
-        // .startWith(false)
     };
 }
-
-
 
 function Search (sources: SearchSources): SearchSinks {
     const actions = intent(sources)
     const cid= "ggX0UomnLs0VmW7qZnCzw"
 
-    , requestTrackList$ = xs.combine(actions.typedSearch$,  actions.clickOnNext$)
+    , requestTrackList$ = xs.combine(actions.typedSearch$, actions.clickOnNext$)
         .filter(([input, next]) => input.length > 2) // filter if more than 2 chars
         .map(([input, next]) => {
         return {
@@ -68,7 +64,6 @@ function Search (sources: SearchSources): SearchSinks {
         .map(res => res.body)
         .startWith(null)
 
-
     , responseSingleTrack$ = sources.http.select('single-track')
         .flatten()
         .map(res => res.body)
@@ -81,7 +76,7 @@ function Search (sources: SearchSources): SearchSinks {
 
     , drawTrack$ = xs.combine(responseSingleTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
         .map(([drawTrack, track, play]) => {
-            return track === "" ? null : SetTrack(drawTrack, play)
+            return track === "" ? null : SetSingelTrack(drawTrack, play)
         })
 
     , vtree$ = xs.combine(actions.typedSearch$, drawTrackList$, drawTrack$)
@@ -91,9 +86,9 @@ function Search (sources: SearchSources): SearchSinks {
                           input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}})
                     ])
                     ,div('.search-results',[
-                            !typedSearch
-                            ? div()
-                            : drawTrackListDOM , drawTrackDOM
+                            ...(!typedSearch
+                                ? [div()]
+                                : [drawTrackListDOM, drawTrackDOM])
                         ])
                     ])
                 })
