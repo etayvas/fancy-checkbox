@@ -67,17 +67,12 @@ function Search (sources: SearchSources): SearchSinks {
         .flatten()
         .map(res => res.body)
         .startWith(null)
-        // .map(result => {
-        //     return result === null ? result : SetTrackList(result.collection)
-        //     })
+
 
     , responseSingleTrack$ = sources.http.select('single-track')
         .flatten()
         .map(res => res.body)
         .startWith(null)
-        // .map(TrackData => {
-        //     return TrackData === null ? null : TrackData
-        //     })
 
     , drawTrackList$ = xs.combine(responseTrackList$, actions.typedSearch$)
         .map(([drawTrackList, input]) => {
@@ -85,8 +80,8 @@ function Search (sources: SearchSources): SearchSinks {
         })
 
     , drawTrack$ = xs.combine(responseSingleTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
-        .map(([drawTrack, status, play]) => {
-            return status === "" ? null : SetTrack(drawTrack, play)
+        .map(([drawTrack, track, play]) => {
+            return track === "" ? null : SetTrack(drawTrack, play)
         })
 
     , vtree$ = xs.combine(actions.typedSearch$, drawTrackList$, drawTrack$)

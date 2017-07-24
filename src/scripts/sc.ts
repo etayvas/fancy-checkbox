@@ -15,16 +15,19 @@ interface TrackData {
     streamStatus: boolean
 }
 
-function TrackStream(TrackId: String){
+let playerExist: any
+, currentTrack = ""
+function TrackStream(TrackId: string){
     SC.stream('/tracks/'+TrackId).then(function(player: any){
-	  player.play();
-	});
+            playerExist=player
+            currentTrack = TrackId
+        });
 }
 
 function TrackDom(TrackData: TrackData, isStreaming: Boolean){
     let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
         , icon_pause = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-pause-128.png"
-        
+
     return div('.track-data',[
           div(".play",[
               !isStreaming
@@ -65,12 +68,13 @@ export function SetTrackList(resCollection: Array<tracksArray>){
      return trackList
 }
 
-export function SetTrack(TrackData: any, streamStatus: Boolean){
-    streamStatus
+export function SetTrack(TrackData: any, clickStatus: boolean){
+
+    (playerExist === undefined || currentTrack !== TrackData.id)
     ? TrackStream(TrackData.id)
-    : ""
+    : (clickStatus ? playerExist.play() : playerExist.pause())
 
     return TrackData === null
-        ? div('.track-data','BOOM')
-        : TrackDom(TrackData, streamStatus)
+        ? div()
+        : TrackDom(TrackData, clickStatus)
 }
