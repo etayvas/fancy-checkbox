@@ -41,46 +41,42 @@ function Search (sources: SearchSources): SearchSinks {
         .map(([input, next]) => {
         return {
               url: `https://api.soundcloud.com/tracks?format=json&client_id=${cid}&q=${input}&limit=6&linked_partitioning=1&offset=${next > 0 ? next : 0 }`
-            , category: "tracks-list"
+            , category: "list"
             }
         })
-
     , requestSingleTrack$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$)
         .filter(([input]) => input.length > 2) // filter if more than 2 chars
         .map(([input, track]) => {
             return {
                   url: `https://api.soundcloud.com/tracks/${track}?format=json&client_id=${cid}`
-                , category: "single-track"
+                , category: "track"
             }
         })
-
     , http$ = xs.merge(
         requestTrackList$
       , requestSingleTrack$
     )
 
-    , responseTrackList$ = sources.http.select('tracks-list')
+    , resList$ = sources.http.select('list')
         .flatten()
         .map(res => res.body)
         .startWith(null)
+    , list$ = xs.combine(resList$, actions.typedSearch$)
+        .map(([list, input]) => {
+            return list === null ? null : SetTrackList(list.collection)
+        })
 
-    , responseSingleTrack$ = sources.http.select('single-track')
+    , resTrack$ = sources.http.select('track')
         .flatten()
         .map(res => res.body)
         .startWith(null)
-
-    , drawTrackList$ = xs.combine(responseTrackList$, actions.typedSearch$)
-        .map(([drawTrackList, input]) => {
-            return drawTrackList === null ? drawTrackList : SetTrackList(drawTrackList.collection)
+    , track$ = xs.combine(resTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
+        .map(([track, trackClick, playClick]) => {
+            return trackClick === "" ? null : SetSingelTrack(track, playClick)
         })
 
-    , drawTrack$ = xs.combine(responseSingleTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
-        .map(([drawTrack, track, play]) => {
-            return track === "" ? null : SetSingelTrack(drawTrack, play)
-        })
-
-    , vtree$ = xs.combine(actions.typedSearch$, drawTrackList$, drawTrack$)
-            .map(([typedSearch, drawTrackListDOM, drawTrackDOM]) => {
+    , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
+            .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
                           input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}})
@@ -88,7 +84,7 @@ function Search (sources: SearchSources): SearchSinks {
                     ,div('.search-results',[
                             ...(!typedSearch
                                 ? [div()]
-                                : [drawTrackListDOM, drawTrackDOM])
+                                : [listDOM, trackDOM])
                         ])
                     ])
                 })

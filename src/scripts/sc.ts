@@ -23,7 +23,10 @@ interface TrackData {
     artwork_url: string
     streamStatus: boolean
 }
-
+interface Item {
+    id: number
+    title: string
+}
 //is TrackData ok when partly
 function TrackDom(TrackData: TrackData, isStreaming: boolean){
     let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
@@ -43,12 +46,11 @@ function TrackDom(TrackData: TrackData, isStreaming: boolean){
     ])
 }
 
-interface Item {
-    id: number
-    title: string
-}
-
 export function SetTrackList(resCollection: Item[]){
+    playerExist !== undefined
+    ? playerExist.pause()
+    : ""
+
     const items = resCollection.map((item, index: Number) => {
         return div('.track-'+index, {attrs: {id: item.id}}, item.title)
     })
