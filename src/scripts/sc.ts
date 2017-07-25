@@ -58,12 +58,11 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(TrackData: any, clickStatus: boolean){
-    ((playerExist === undefined && clickStatus) || (currentTrack !== TrackData.id))
-    ? TrackStream(TrackData.id)
+export function SetTrack(trackData: any, clickStatus: boolean){
+    //??can currentTrack be used with remember()?
+    ((playerExist === undefined && clickStatus) || (currentTrack !== trackData.id))
+    ? TrackStream(trackData.id)
     : (clickStatus ? playerExist.play() : playerExist.pause())
 
-    return TrackData === null
-        ? div()
-        : TrackDom(TrackData, clickStatus)
+    return TrackDom(trackData, clickStatus)
 }

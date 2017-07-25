@@ -37,7 +37,8 @@ function Search (sources: SearchSources): SearchSinks {
     const cid= "ggX0UomnLs0VmW7qZnCzw"
 
     , requestTrackList$ = xs.combine(actions.typedSearch$, actions.clickOnNext$)
-        .filter(([input, next]) => input.length > 2) // filter if more than 2 chars
+        // filter if more than 2 chars
+        .filter(([input, next]) => input.length > 2)
         .map(([input, next]) => {
         return {
               url: `https://api.soundcloud.com/tracks?format=json&client_id=${cid}&q=${input}&limit=6&linked_partitioning=1&offset=${next > 0 ? next : 0 }`
@@ -45,7 +46,8 @@ function Search (sources: SearchSources): SearchSinks {
             }
         })
     , requestSingleTrack$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$)
-        .filter(([input]) => input.length > 2) // filter if more than 2 chars
+        // filter if more than 2 chars and we have trackId
+        .filter(([input, track]) => (input.length > 2 && track !== ""))
         .map(([input, track]) => {
             return {
                   url: `https://api.soundcloud.com/tracks/${track}?format=json&client_id=${cid}`
@@ -71,8 +73,8 @@ function Search (sources: SearchSources): SearchSinks {
         .map(res => res.body)
         .startWith(null)
     , track$ = xs.combine(resTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
-        .map(([track, trackClick, playClick]) => {
-            return trackClick === "" ? null : SetTrack(track, playClick)
+        .map(([trackData, trackClickId, playClick]) => {
+            return (trackClickId === "" || trackData === null) ? div() : SetTrack(trackData, playClick)
         })
 
     , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
