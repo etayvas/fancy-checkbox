@@ -27,18 +27,26 @@ interface Item {
     id: number
     title: string
 }
-//is TrackData ok when partly
-function TrackDom(TrackData: TrackData, isStreaming: boolean){
+
+function SetIcon(type:string){
     let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
         , icon_pause = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-pause-128.png"
 
+    return type === "play"
+        ? div(".paused",img(".stream-status",{attrs: {src: icon_play}}))
+        : div(".playing",img(".stream-status",{attrs: {src: icon_pause}}))
+}
+
+//is TrackData ok when partly
+function TrackDom(TrackData: TrackData, isStreaming: boolean){
+
     return div('.track-data',[
-          div(".play",[
-              !isStreaming
-              ? div(".paused",img(".stream-status",{attrs: {src: icon_play}}))
-              : div(".playing",img(".stream-status",{attrs: {src: icon_pause}}))
-        ]
-      )
+              div(".play",[
+                  !isStreaming
+                  ? SetIcon("play")
+                  : SetIcon("pause")
+            ]
+          )
         , div(".title",TrackData.title)
         //, div(".description",TrackData.description)
         , div(".created",TrackData.created_at)
@@ -47,10 +55,6 @@ function TrackDom(TrackData: TrackData, isStreaming: boolean){
 }
 
 export function SetList(resCollection: Item[]){
-    playerExist !== undefined
-    ? playerExist.pause()
-    : ""
-
     const items = resCollection.map((item, index: Number) => {
         return div('.track-'+index, {attrs: {id: item.id}}, item.title)
     })
@@ -58,11 +62,11 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(trackData: any, clickStatus: boolean){
+export function SetTrack(trackData: any, clickPlayStatus: boolean, trackClickId: string){
     //??can currentTrack be used with remember()?
-    ((playerExist === undefined && clickStatus) || (currentTrack !== trackData.id))
-    ? TrackStream(trackData.id)
-    : (clickStatus ? playerExist.play() : playerExist.pause())
+    ( (playerExist === undefined && clickPlayStatus) || (currentTrack !== trackData.id) )
+    ? TrackStream(trackData.id) //stream/restream if play
+    : (clickPlayStatus ? playerExist.play() : playerExist.pause())
 
-    return TrackDom(trackData, clickStatus)
+    return TrackDom(trackData, clickPlayStatus)
 }

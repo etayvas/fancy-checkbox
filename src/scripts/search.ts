@@ -63,6 +63,7 @@ function Search (sources: SearchSources): SearchSinks {
         .flatten()
         .map(res => res.body)
         .startWith(null)
+
     , list$ = xs.combine(resList$, actions.typedSearch$)
         .map(([list, input]) => {
             return list === null ? null : SetList(list.collection)
@@ -72,16 +73,21 @@ function Search (sources: SearchSources): SearchSinks {
         .flatten()
         .map(res => res.body)
         .startWith(null)
+
+
     , track$ = xs.combine(resTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
+        //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
         .map(([trackData, trackClickId, playClick]) => {
-            return (trackClickId === "" || trackData === null) ? div() : SetTrack(trackData, playClick)
+            return (trackData && trackClickId !== "")
+            ? SetTrack(trackData, playClick, trackClickId)
+            : div()
         })
 
     , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
-                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search'}})
+                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'bo'}})
                     ])
                     ,div('.search-results',[
                             ...(!typedSearch
