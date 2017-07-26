@@ -41,12 +41,14 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(trackData: TrackData, shouldStream: boolean){
+export function SetTrack(trackData: TrackData, clickedPlay: boolean, streamStatus: boolean){
+  console.log(clickedPlay)
+  console.log(streamStatus)
   return div('.track-data',[
                 div(".stream-status",[
-                    !shouldStream
+                    !clickedPlay
                     ? SetIcon("play")
-                    : SetIcon("pause")
+                    : streamStatus ? SetIcon("pause") : SetIcon("play")
               ]
             )
           , div(".title",trackData.title)
@@ -62,7 +64,12 @@ export function StreamTrack(trackId: any, clickedPlay: boolean){
     SC.stream('/tracks/'+trackId).then(function(stream: any){
       player = stream
       currentTrack = trackId
+      player.pause()
     })
   ]
   : [(clickedPlay && player !== undefined) ? player.play() : player !== undefined ? player.pause() : ""]
+
+  return ((clickedPlay && player === undefined) || (currentTrack !== trackId))
+  ? true
+  : (clickedPlay && player !== undefined) ? true : player !== undefined ? false : false
 }

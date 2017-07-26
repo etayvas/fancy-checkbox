@@ -58,7 +58,6 @@ function Search (sources: SearchSources): SearchSinks {
         requestTrackList$
       , requestSingleTrack$
     )
-
     , resList$ = sources.http.select('list')
         .flatten()
         .map(res => res.body)
@@ -67,39 +66,32 @@ function Search (sources: SearchSources): SearchSinks {
         .map(([list, input]) => {
             return list === null ? null : SetList(list.collection)
         })
-
     , resTrack$ = sources.http.select('track')
         .flatten()
         .map(res => res.body)
         .startWith(null)
 
-    // , clickedOnNewTrackWhileStreaming$ = actions.clickOnTrack$
-    // .map(([newTrackId]) => {
-    //         return ((currentTrack !== newTrackId) && playerExist)
-    //         ? false//playerExist.pause()
-    //         : true
-    //     })
-
-    , track$ = xs.combine(resTrack$, actions.clickOnPlay$)
-        //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
-        .map(([trackData, playStatus]) => {
-            return (trackData)
-            ? SetTrack(trackData, playStatus)
-            : div()
-        })
-
     , stream$ = xs.combine(actions.clickOnTrack$, actions.clickOnPlay$)
         .map(([trackId, clickOnPlay]) => {
-            StreamTrack(trackId,clickOnPlay)
+          return StreamTrack(trackId, clickOnPlay)
+        }).debug("stream$")
+
+      , track$ = xs.combine(resTrack$, actions.clickOnPlay$, stream$)
+      //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
+      .map(([trackData, playStatus, streamStatus]) => {
+          return (trackData)
+          ? SetTrack(trackData, playStatus, streamStatus)
+          : div()
         })
 
 
 
-    , vtree$ = xs.combine(actions.typedSearch$, list$, track$, stream$)
+
+    , vtree$ = xs.combine(actions.typedSearch$, list$,  track$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
-                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'jo'}})
+                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'re'}})
                     ])
                     ,div('.search-results',[
                             ...(!typedSearch
