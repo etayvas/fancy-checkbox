@@ -33,22 +33,6 @@ function SetIcon(type:string){
         : div(".playing",img({attrs: {src: icon_pause}}))
 }
 
-//is TrackData ok when partly
-function TrackDom(TrackData: TrackData, isStreaming: boolean){
-    return div('.track-data',[
-              div(".stream-status",[
-                  !isStreaming
-                  ? SetIcon("play")
-                  : SetIcon("pause")
-            ]
-          )
-        , div(".title",TrackData.title)
-        //, div(".description",TrackData.description)
-        , div(".created",TrackData.created_at)
-        , TrackData.artwork_url ? img(".artwork",{attrs: {src: TrackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
-    ])
-}
-
 export function SetList(resCollection: Item[]){
     const items = resCollection.map((item, index: Number) => {
         return div('.track-'+index, {attrs: {id: item.id}}, item.title)
@@ -57,26 +41,28 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(trackData: any, shouldStream: boolean){
-    // //??can currentTrack be used with remember()?
-    // ( (playerExist === undefined && shouldStream) || (currentTrack !== trackData.id) )
-    // ? StreamTrack(trackData.id) //stream/restream if play
-    // : (shouldStream ? playerExist.play() : playerExist.pause())
-
-    return TrackDom(trackData, shouldStream)
+export function SetTrack(trackData: TrackData, shouldStream: boolean){
+  return div('.track-data',[
+                div(".stream-status",[
+                    !shouldStream
+                    ? SetIcon("play")
+                    : SetIcon("pause")
+              ]
+            )
+          , div(".title",trackData.title)
+          //, div(".description",TrackData.description)
+          , div(".created",trackData.created_at)
+          , trackData.artwork_url ? img(".artwork",{attrs: {src: trackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
+      ])
 }
-export function StreamTrack(trackId: any, clickedPlay: boolean){
-    if((clickedPlay && player === undefined) || (currentTrack !== trackId)){
-      SC.stream('/tracks/'+trackId).then(function(stream: any){
-        player = stream
-        currentTrack = trackId
-      })
-    }
-    else if(clickedPlay && player !== undefined){
-      player.play()
-    }
-    else if(player !== undefined){
-      player.pause()
-    }
 
+export function StreamTrack(trackId: any, clickedPlay: boolean){
+  ((clickedPlay && player === undefined) || (currentTrack !== trackId))
+  ? [
+    SC.stream('/tracks/'+trackId).then(function(stream: any){
+      player = stream
+      currentTrack = trackId
+    })
+  ]
+  : [(clickedPlay && player !== undefined) ? player.play() : player !== undefined ? player.pause() : ""]
 }
