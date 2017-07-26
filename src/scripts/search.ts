@@ -3,7 +3,7 @@ import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetList, SetTrack } from  './sc'
+import { SetList, SetTrack, StreamTrack} from  './sc'
 
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
@@ -15,20 +15,20 @@ function intent(sources: SearchSources) {
         .map(event => (event.target as HTMLInputElement).value)
         .compose(debounce(800)) //delay when typing
         .startWith("")
-
-    //need to remember the previous id and if differ we should simulate a click on clickOnPlay$
     , clickOnTrack$: sources.dom.select(".track-list div").events("click")
         .map(event => (event.target as HTMLInputElement).id)
         .startWith("")
-
-    //need to reset the counter once the typedSearch$ pressed
     , clickOnNext$: sources.dom.select(".button-next").events("click")
         .fold((x) => x + 6, 0)
         .map((count) => {
             return (count+6)
         })
-    , clickOnPlay$: sources.dom.select(".play").events("click")
+    , clickOnPlay$: sources.dom.select(".stream-status").events("click")
         .fold(prev => !prev, false)
+    // , clickOnStreamIcon$: sources.dom.select(".stream-status div").events("click")
+    //     //.map(event => (event.currentTarget as HTMLInputElement).getAttribute("data-stream") as string)
+    //     .map(event => (event.currentTarget as HTMLInputElement).className)
+    //     .startWith("paused")
     };
 }
 
@@ -63,7 +63,6 @@ function Search (sources: SearchSources): SearchSinks {
         .flatten()
         .map(res => res.body)
         .startWith(null)
-
     , list$ = xs.combine(resList$, actions.typedSearch$)
         .map(([list, input]) => {
             return list === null ? null : SetList(list.collection)
@@ -74,20 +73,33 @@ function Search (sources: SearchSources): SearchSinks {
         .map(res => res.body)
         .startWith(null)
 
+    // , clickedOnNewTrackWhileStreaming$ = actions.clickOnTrack$
+    // .map(([newTrackId]) => {
+    //         return ((currentTrack !== newTrackId) && playerExist)
+    //         ? false//playerExist.pause()
+    //         : true
+    //     })
 
-    , track$ = xs.combine(resTrack$, actions.clickOnTrack$, actions.clickOnPlay$)
+    , track$ = xs.combine(resTrack$, actions.clickOnPlay$)
         //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
-        .map(([trackData, trackClickId, playClick]) => {
-            return (trackData && trackClickId !== "")
-            ? SetTrack(trackData, playClick, trackClickId)
+        .map(([trackData, playStatus]) => {
+            return (trackData)
+            ? SetTrack(trackData, playStatus)
             : div()
         })
 
-    , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
+    , stream$ = xs.combine(actions.clickOnTrack$, actions.clickOnPlay$)
+        .map(([trackId, clickOnPlay]) => {
+            StreamTrack(trackId,clickOnPlay)
+        })
+
+
+
+    , vtree$ = xs.combine(actions.typedSearch$, list$, track$, stream$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
-                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'bo'}})
+                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'jo'}})
                     ])
                     ,div('.search-results',[
                             ...(!typedSearch

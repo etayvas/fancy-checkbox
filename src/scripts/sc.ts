@@ -9,12 +9,8 @@ interface ScSinks extends Sinks.dom {}
 
 let playerExist: any
 , currentTrack = ""
-function TrackStream(TrackId: string){
-    SC.stream('/tracks/'+TrackId).then(function(player: any){
-            playerExist=player
-            currentTrack = TrackId
-        });
-}
+,is_playing = false
+,player: any
 
 interface TrackData {
     id: string
@@ -33,15 +29,14 @@ function SetIcon(type:string){
         , icon_pause = "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-pause-128.png"
 
     return type === "play"
-        ? div(".paused",img(".stream-status",{attrs: {src: icon_play}}))
-        : div(".playing",img(".stream-status",{attrs: {src: icon_pause}}))
+        ? div(".paused",img({attrs: {src: icon_play}}))
+        : div(".playing",img({attrs: {src: icon_pause}}))
 }
 
 //is TrackData ok when partly
 function TrackDom(TrackData: TrackData, isStreaming: boolean){
-
     return div('.track-data',[
-              div(".play",[
+              div(".stream-status",[
                   !isStreaming
                   ? SetIcon("play")
                   : SetIcon("pause")
@@ -62,11 +57,26 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(trackData: any, clickPlayStatus: boolean, trackClickId: string){
-    //??can currentTrack be used with remember()?
-    ( (playerExist === undefined && clickPlayStatus) || (currentTrack !== trackData.id) )
-    ? TrackStream(trackData.id) //stream/restream if play
-    : (clickPlayStatus ? playerExist.play() : playerExist.pause())
+export function SetTrack(trackData: any, shouldStream: boolean){
+    // //??can currentTrack be used with remember()?
+    // ( (playerExist === undefined && shouldStream) || (currentTrack !== trackData.id) )
+    // ? StreamTrack(trackData.id) //stream/restream if play
+    // : (shouldStream ? playerExist.play() : playerExist.pause())
 
-    return TrackDom(trackData, clickPlayStatus)
+    return TrackDom(trackData, shouldStream)
+}
+export function StreamTrack(trackId: any, clickedPlay: boolean){
+    if((clickedPlay && player === undefined) || (currentTrack !== trackId)){
+      SC.stream('/tracks/'+trackId).then(function(stream: any){
+        player = stream
+        currentTrack = trackId
+      })
+    }
+    else if(clickedPlay && player !== undefined){
+      player.play()
+    }
+    else if(player !== undefined){
+      player.pause()
+    }
+
 }
