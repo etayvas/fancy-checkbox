@@ -42,9 +42,9 @@ export function SetList(resCollection: Item[]){
 
 let streaming = false
 let toggleStream
-export function SetTrack(trackData: TrackData, isNewTrack: boolean){
+export function SetTrack(trackData: TrackData){
 
-  (player === undefined || isNewTrack)
+  (player === undefined || currentTrack !== trackData.id)
   ? [
       SC.stream('/tracks/'+trackData.id).then(function(stream: any){
        player = stream
@@ -70,10 +70,4 @@ export function SetTrack(trackData: TrackData, isNewTrack: boolean){
      // ,div('.controls',SetIcon("pause"))
   ])
 
-}
-
-export function IsNewTrack(trackId: string){
-  return (currentTrack != trackId) //different types
-  ? true
-  : false
 }

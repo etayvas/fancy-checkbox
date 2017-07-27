@@ -3,7 +3,7 @@ import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetList, SetTrack, IsNewTrack} from  './sc'
+import { SetList, SetTrack} from  './sc'
 
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
@@ -74,31 +74,20 @@ function Search (sources: SearchSources): SearchSinks {
             return list === null ? null : SetList(list.collection)
         })
 
-    , isNewTrack$ = xs.combine(actions.clickOnTrack$)
-        .map(([trackId]) => {
-          return IsNewTrack(trackId)
-        })
-
     , resTrack$ = sources.http.select('track')
         .flatten()
         .map(res => { return res.body})
         .startWith(false)
+        .map(trackData => {
+            return trackData ? SetTrack(trackData) : div()
+          })
 
-    , track$ = xs.combine(resTrack$, isNewTrack$)
-      //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
-      .map(([trackData, isNewTrack]) => {
-          return trackData
-          ? SetTrack(trackData, isNewTrack)
-          : div()
-        })
-
-
-    , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
+    , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
                           input('.search-input',
-                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'no'}})
+                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'biber'}})
                         ])
                     ,div('.search-results',[
                             ...(!typedSearch
