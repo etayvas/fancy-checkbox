@@ -21,10 +21,27 @@
     "xstream": "^10.8.0"
   },
   "devDependencies": {
-    "extract-text-webpack-plugin": "^3.0.0"
+    "@types/jest": "^20.0.5",
+    "babel-jest": "^20.0.3",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "jest": "^20.0.4",
+    "ts-jest": "^20.0.7"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "babel": {
     "presets": [
