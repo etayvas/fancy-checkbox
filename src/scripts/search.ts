@@ -3,10 +3,15 @@ import debounce from 'xstream/extra/debounce'
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
-import { SetList, SetTrack, StreamTrack} from  './sc'
+import { SetList, SetTrack, IsNewTrack} from  './sc'
 
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
+
+declare const SC: any
+SC.initialize({
+       client_id: "ggX0UomnLs0VmW7qZnCzw"
+     });
 
 /*user intended actions*/
 function intent(sources: SearchSources) {
@@ -23,12 +28,14 @@ function intent(sources: SearchSources) {
         .map((count) => {
             return (count+6)
         })
-    , clickOnPlay$: sources.dom.select(".stream-status").events("click")
-        .fold(prev => !prev, false)
-    // , clickOnStreamIcon$: sources.dom.select(".stream-status div").events("click")
-    //     //.map(event => (event.currentTarget as HTMLInputElement).getAttribute("data-stream") as string)
-    //     .map(event => (event.currentTarget as HTMLInputElement).className)
-    //     .startWith("paused")
+    // , clickOnPlay$: sources.dom.select(".stream-status").events("click")
+    //     .fold(prev => !prev, false)
+    // , clickOnIconPlay$: sources.dom.select(".playing").events("click")
+    //     .mapTo(true)
+    //     .startWith(false)
+    // , clickOnIconPause$: sources.dom.select(".paused").events("click")
+    //     .mapTo(true)
+    //     .startWith(false)
     };
 }
 
@@ -66,33 +73,33 @@ function Search (sources: SearchSources): SearchSinks {
         .map(([list, input]) => {
             return list === null ? null : SetList(list.collection)
         })
+
+    , isNewTrack$ = xs.combine(actions.clickOnTrack$)
+        .map(([trackId]) => {
+          return IsNewTrack(trackId)
+        })
+
     , resTrack$ = sources.http.select('track')
         .flatten()
-        .map(res => res.body)
-        .startWith(null)
+        .map(res => { return res.body})
+        .startWith(false)
 
-    , stream$ = xs.combine(actions.clickOnTrack$, actions.clickOnPlay$)
-        .map(([trackId, clickOnPlay]) => {
-          return StreamTrack(trackId, clickOnPlay)
-        }).debug("stream$")
-
-      , track$ = xs.combine(resTrack$, actions.clickOnPlay$, stream$)
+    , track$ = xs.combine(resTrack$, isNewTrack$)
       //.filter(([trackData, trackClickId, playClick]) => trackClickId !== "" )
-      .map(([trackData, playStatus, streamStatus]) => {
-          return (trackData)
-          ? SetTrack(trackData, playStatus, streamStatus)
+      .map(([trackData, isNewTrack]) => {
+          return trackData
+          ? SetTrack(trackData, isNewTrack)
           : div()
         })
 
 
-
-
-    , vtree$ = xs.combine(actions.typedSearch$, list$,  track$)
+    , vtree$ = xs.combine(actions.typedSearch$, list$, track$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
-                          input('.search-input',{attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'re'}})
-                    ])
+                          input('.search-input',
+                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'no'}})
+                        ])
                     ,div('.search-results',[
                             ...(!typedSearch
                                 ? [div()]

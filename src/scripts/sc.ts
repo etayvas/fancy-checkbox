@@ -8,9 +8,8 @@ interface ScSources extends Sources.dom {}
 interface ScSinks extends Sinks.dom {}
 
 let playerExist: any
-, currentTrack = ""
-,is_playing = false
-,player: any
+let currentTrack = ""
+let player: any
 
 interface TrackData {
     id: string
@@ -41,35 +40,40 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-export function SetTrack(trackData: TrackData, clickedPlay: boolean, streamStatus: boolean){
-  console.log(clickedPlay)
-  console.log(streamStatus)
+let streaming = false
+let toggleStream
+export function SetTrack(trackData: TrackData, isNewTrack: boolean){
+
+  (player === undefined || isNewTrack)
+  ? [
+      SC.stream('/tracks/'+trackData.id).then(function(stream: any){
+       player = stream
+       currentTrack = trackData.id
+       console.log("new file")
+       player.play()
+     })
+  ]
+  : console.log("nope")
+
   return div('.track-data',[
-                div(".stream-status",[
-                    !clickedPlay
-                    ? SetIcon("play")
-                    : streamStatus ? SetIcon("pause") : SetIcon("play")
-              ]
-            )
-          , div(".title",trackData.title)
-          //, div(".description",TrackData.description)
-          , div(".created",trackData.created_at)
-          , trackData.artwork_url ? img(".artwork",{attrs: {src: trackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
-      ])
+    //   div(".stream-status",[
+    //                 !streaming
+    //                 ? SetIcon("play")
+    //                 : SetIcon("pause")
+    //           ]
+    //         )
+    //       ,
+        div(".title",trackData.title)
+      //, div(".description",TrackData.description)
+      , div(".created",trackData.created_at)
+      , trackData.artwork_url ? img(".artwork",{attrs: {src: trackData.artwork_url.replace("-large.jpg", "-t250x250.jpg")}}) : "[NO IMAGE]"
+     // ,div('.controls',SetIcon("pause"))
+  ])
+
 }
 
-export function StreamTrack(trackId: any, clickedPlay: boolean){
-  ((clickedPlay && player === undefined) || (currentTrack !== trackId))
-  ? [
-    SC.stream('/tracks/'+trackId).then(function(stream: any){
-      player = stream
-      currentTrack = trackId
-      player.pause()
-    })
-  ]
-  : [(clickedPlay && player !== undefined) ? player.play() : player !== undefined ? player.pause() : ""]
-
-  return ((clickedPlay && player === undefined) || (currentTrack !== trackId))
+export function IsNewTrack(trackId: string){
+  return (currentTrack != trackId) //different types
   ? true
-  : (clickedPlay && player !== undefined) ? true : player !== undefined ? false : false
+  : false
 }

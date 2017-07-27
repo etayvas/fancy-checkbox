@@ -15,6 +15,12 @@ body {
     .track-list {
         padding: 25px;
         align-self: flex-start;
+
+        div:hover{
+            background-color: white;
+            color: black;
+            cursor: pointer;
+        }
     }
 
     .track-data {
