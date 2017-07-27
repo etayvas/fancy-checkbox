@@ -7,9 +7,6 @@ declare const SC: any
 interface ScSources extends Sources.dom {}
 interface ScSinks extends Sinks.dom {}
 
-let playerExist: any
-let currentTrack = ""
-let player: any
 
 interface TrackData {
     id: string
@@ -40,8 +37,9 @@ export function SetList(resCollection: Item[]){
      return trackList
 }
 
-let streaming = false
-let toggleStream
+
+let currentTrack = ""
+    , player: any
 export function SetTrack(trackData: TrackData){
 
   (player === undefined || currentTrack !== trackData.id)
@@ -49,11 +47,11 @@ export function SetTrack(trackData: TrackData){
       SC.stream('/tracks/'+trackData.id).then(function(stream: any){
        player = stream
        currentTrack = trackData.id
-       console.log("new file")
        player.play()
      })
   ]
-  : console.log("nope")
+  :  console.log("TODO: pause here and setup play")
+
 
   return div('.track-data',[
     //   div(".stream-status",[

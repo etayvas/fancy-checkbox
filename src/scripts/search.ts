@@ -76,18 +76,18 @@ function Search (sources: SearchSources): SearchSinks {
 
     , resTrack$ = sources.http.select('track')
         .flatten()
-        .map(res => { return res.body})
-        .startWith(false)
+        //.map(res => { return res.body})
+        //.startWith(false)
         .map(trackData => {
-            return trackData ? SetTrack(trackData) : div()
-          })
+            return trackData.body ? SetTrack(trackData.body) : div()
+        }).startWith(div())
 
     , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$)
             .map(([typedSearch, listDOM, trackDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
                           input('.search-input',
-                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'biber'}})
+                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'', autofocus:"autofocus"}})
                         ])
                     ,div('.search-results',[
                             ...(!typedSearch
