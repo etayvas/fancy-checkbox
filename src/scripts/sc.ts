@@ -6,8 +6,6 @@ declare const SC: any
 
 interface ScSources extends Sources.dom {}
 interface ScSinks extends Sinks.dom {}
-
-
 interface TrackData {
     id: string
     title: string
@@ -19,6 +17,9 @@ interface Item {
     id: number
     title: string
 }
+
+let currentTrack = ""
+    , player: any
 
 function SetIcon(type:string){
     let   icon_play =  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-play-128.png"
@@ -38,8 +39,6 @@ export function SetList(resCollection: Item[]){
 }
 
 
-let currentTrack = ""
-    , player: any
 export function SetTrack(trackData: TrackData){
 
   (player === undefined || currentTrack !== trackData.id)

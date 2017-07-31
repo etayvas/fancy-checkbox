@@ -1,7 +1,8 @@
 const webpack = require('webpack')
-, path = require('path')
+//, CopyWebpackPlugin = require('copy-webpack-plugin')
 //seperate css file
 , ExtractTextPlugin = require("extract-text-webpack-plugin")
+, path = require('path')
 
 const config = {
     context: path.resolve(__dirname, './src')
@@ -49,7 +50,11 @@ const config = {
         ]
     }
     ,plugins: [
-        new ExtractTextPlugin('style.css')
+          new ExtractTextPlugin('style.css')
+        // , new CopyWebpackPlugin([
+        //     // Copy directory contents to {output}/to/directory/
+        //     { from: 'utils', to: 'utils' }
+        // ])
     ]
     ,watch: true
 };
