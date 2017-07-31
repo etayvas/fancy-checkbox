@@ -16,12 +16,11 @@ function main (sources: MainSources): MainSinks {
         , buttons$ = Buttons({dom: sources.dom})
         //, recentSearch$ = RecentSearch({dom: sources.dom})
         , dom$ = xs.combine(search$.dom, buttons$.dom)
-            .map(([searchDom, buttonsDom]) => {
+            .map(([searchDOM, buttonsDOM]) => {
                 return div(".main-holder", [
                     , div('SC CycleJS')
-                    , searchDom
-                    , div(".search-recent","[Recent searchs here]")
-                    , buttonsDom
+                    , searchDOM
+                    , buttonsDOM
                     ])
                 }
             )

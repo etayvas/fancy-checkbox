@@ -4,6 +4,7 @@ import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, input, button} from '@cycle/dom'
 import {makeHTTPDriver, HTTPSource, RequestOptions} from "@cycle/http"
 import { SetList, SetTrack} from  './sc'
+import SHistory from  './history'
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
 
@@ -50,7 +51,7 @@ function Search (sources: SearchSources): SearchSinks {
         // filter if more than 2 chars
         .filter(([input, next]) => input.length > 2)
         .map(([input, next]) => {
-            //stup localStorage
+            //setup localStorage
             localStorage
             ? [
                 localStorage.getItem('history') ? history = JSON.parse(localStorage.getItem('history') as string) : console.log('nothing in history (yet)')
@@ -60,6 +61,7 @@ function Search (sources: SearchSources): SearchSinks {
                 , console.log(localStorage.getItem('history'))
             ]
             :   alert("can't use localStorage") //optimally needs to add fallbacks
+
         return {
               url: `https://api.soundcloud.com/tracks?format=json&client_id=${cid}&q=${input}&limit=6&linked_partitioning=1&offset=${next > 0 ? next : 0 }`
             , category: "list"
@@ -84,10 +86,8 @@ function Search (sources: SearchSources): SearchSinks {
         .startWith(null)
     , list$ = xs.combine(resList$, actions.typedSearch$)
         .map(([list, input]) => {
-            //console.log(LS.)
             return list === null ? null : SetList(list.collection)
         })
-
     , resTrack$ = sources.http.select('track')
         .flatten()
         //.map(res => { return res.body})
@@ -95,9 +95,9 @@ function Search (sources: SearchSources): SearchSinks {
         .map(trackData => {
             return trackData.body ? SetTrack(trackData.body) : div()
         }).startWith(div())
-
-    , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$)
-            .map(([typedSearch, listDOM, trackDOM]) => {
+    , history$ = SHistory({dom: sources.dom})
+    , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$, history$.dom)
+            .map(([typedSearch, listDOM, trackDOM, historyDOM]) => {
                 return div(".search-holder",[
                     div('.search-field',[
                           input('.search-input',
@@ -108,6 +108,7 @@ function Search (sources: SearchSources): SearchSinks {
                                 ? [div()]
                                 : [listDOM, trackDOM])
                         ])
+                    ,historyDOM
                     ])
                 })
 
@@ -118,16 +119,3 @@ function Search (sources: SearchSources): SearchSinks {
     return sinks
 }
 export default Search
-
-
-// export function RecentSearch (sources: SearchSources): SearchSinks {
-//
-//     const vtree$ = xs.of(
-//         div(".search-recent","[Recent searchs here]")
-//
-//     )
-//     const sinks = {
-//         dom: vtree$
-//     }
-//     return sinks
-// }

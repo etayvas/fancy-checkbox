@@ -38,7 +38,23 @@ body {
     }
 }
 
-
+.search-history{
+    div{
+        margin: 0 10px;
+        display: inline-block;
+        cursor: pointer;
+        &:hover{
+            background-color: white;
+            color: black;
+        }
+        &::before{
+            content: " // "
+        }
+        &::after{
+            content: " // "
+        }
+    }
+}
 
 
 .actions-area{

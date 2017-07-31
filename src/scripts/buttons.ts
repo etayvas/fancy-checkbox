@@ -2,10 +2,10 @@ import xs from "xstream"
 import { Sources, Sinks } from '../scripts/definitions'
 import {makeDOMDriver, DOMSource, VNode, div, button} from '@cycle/dom'
 
-interface ActionSources extends Sources.dom {}
-interface ActionSinks extends Sinks.dom {}
+interface ButtonSources extends Sources.dom {}
+interface ButtonSinks extends Sinks.dom {}
 
-function Button (sources: ActionSources): ActionSinks {
+function Button (sources: ButtonSources): ButtonSinks {
 
     const vtree$ = xs.of(
         div(".buttons-area",[
