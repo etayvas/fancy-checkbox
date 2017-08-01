@@ -12,15 +12,14 @@ function SHistory (sources: SHistorySources): SHistorySinks {
             history
             ? (JSON.parse(history) as string[])
                 .map((item) => {
-                    console.log(item)
-                    return div('.aaa', item)
+                    return div({dataset: {item: item}}, item)
                 })
             : div()
         )
     )
 
     const sinks = {
-        dom: vtree$.debug()
+        dom: vtree$
     }
     return sinks
 }
