@@ -8,8 +8,6 @@ import SHistory from  './history'
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
 
-
-//let ls = new LS.LocalStorageWorker
 declare const SC: any
 SC.initialize({
        client_id: "ggX0UomnLs0VmW7qZnCzw"
@@ -32,20 +30,12 @@ function intent(sources: SearchSources) {
         .map((count) => {
             return (count+6)
         })
-    // , clickOnPlay$: sources.dom.select(".stream-status").events("click")
-    //     .fold(prev => !prev, false)
-    // , clickOnIconPlay$: sources.dom.select(".playing").events("click")
-    //     .mapTo(true)
-    //     .startWith(false)
-    // , clickOnIconPause$: sources.dom.select(".paused").events("click")
-    //     .mapTo(true)
-    //     .startWith(false)
     };
 }
 
 function Search (sources: SearchSources): SearchSinks {
     const actions = intent(sources)
-    const cid= "ggX0UomnLs0VmW7qZnCzw"
+    , cid= "ggX0UomnLs0VmW7qZnCzw"
 
     , requestTrackList$ = xs.combine(actions.typedSearch$, actions.clickOnNext$)
         // filter if more than 2 chars
@@ -86,20 +76,20 @@ function Search (sources: SearchSources): SearchSinks {
         }).startWith(div())
     , history$ = SHistory({dom: sources.dom})
     , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$, history$.dom)
-            .map(([typedSearch, listDOM, trackDOM, historyDOM]) => {
-                return div(".search-holder",[
-                    div('.search-field',[
-                          input('.search-input',
-                            {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'', autofocus:"autofocus"}})
-                        ])
-                    ,div('.search-results',[
-                            ...(!typedSearch
-                                ? [div()]
-                                : [listDOM, trackDOM])
-                        ])
-                    ,historyDOM
+        .map(([typedSearch, listDOM, trackDOM, historyDOM]) => {
+            return div(".search-holder",[
+                div('.search-field',[
+                      input('.search-input',
+                        {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'', autofocus:"autofocus"}})
                     ])
-                })
+                ,div('.search-results',[
+                        ...(!typedSearch
+                            ? [div()]
+                            : [listDOM, trackDOM])
+                    ])
+                ,historyDOM
+                ])
+            })
 
     , sinks = {
             dom: vtree$

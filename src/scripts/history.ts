@@ -8,6 +8,11 @@ interface SHistorySinks extends Sinks.dom {}
 
 let   LSStatus = false
     , prevInput = ""
+
+localStorage && localStorage.getItem('history')
+? console.log("LS item exist")
+: localStorage.setItem('history', "[ ]") // first init if not exist
+
 function SHistory (sources: SHistorySources): SHistorySinks {
 
     const input$ = sources.dom.select(".search-input").events("input")
@@ -24,43 +29,32 @@ function SHistory (sources: SHistorySources): SHistorySinks {
 
     , updateLS$ = xs.combine(clickOnTrack$, input$)
         .map(([track, input]) => {
-
+            //refactor the LSStatus use + the prevInput checkup ****
             if(LSStatus && prevInput !== input && input.length > 2){
-
-                let history:string[] = [] ;
-                localStorage
-                ? [
-                    localStorage.getItem('history') && input !== "" ? history = JSON.parse(localStorage.getItem('history') as string) : ""
-                    , history.length === 5 ? [history.shift() , history = [...history, input] ]: history = [...history, input]
-                    , localStorage.setItem('history', JSON.stringify(history))
-                    , console.log(localStorage.getItem('history'))
-                ]
-                :   alert("can't use localStorage") //optimally needs to add fallbacks
+                let history:string[] = []
+                history = JSON.parse(localStorage.getItem('history') as string)
+                , history.length === 5 ? [history.shift() , history = [...history, input] ]: history = [...history, input]
+                , localStorage.setItem('history', JSON.stringify(history))
 
                 LSStatus = false
                 prevInput = input
             }
         })
 
+    , vtree$ = xs.combine(updateLS$)
+        .map(([update]) => {
+            console.log(history.length)
+            return div(".search-history",
+                    history.length > -1
+                    ? (JSON.parse(localStorage.getItem('history') as string))
+                        .map((item: string) => {
+                            return div({dataset: {item: item}}, item)
+                        })
+                    : div()
+                )
+            })
 
-    , history = localStorage.getItem('history')
-    , historyDOM$ = xs.of(
-        div(".search-history",
-            history
-            ? (JSON.parse(history) as string[])
-                .map((item) => {
-                    return div({dataset: {item: item}}, item)
-                })
-            : div()
-        )
-    )
-
-    , vtree$ = xs.combine(historyDOM$, updateLS$)
-            .map(([v2, update]) => {
-                return v2
-                })
-
-    const sinks = {
+    , sinks = {
         dom: vtree$
     }
     return sinks
