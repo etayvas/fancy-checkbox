@@ -8,7 +8,7 @@ import SHistory from  './history'
 interface SearchSources extends Sources.dom,Sources.http {}
 interface SearchSinks extends Sinks.dom,Sinks.http {}
 
-let history:string[] = [] ;
+
 //let ls = new LS.LocalStorageWorker
 declare const SC: any
 SC.initialize({
@@ -52,11 +52,11 @@ function Search (sources: SearchSources): SearchSinks {
         .filter(([input, next]) => input.length > 2)
         .map(([input, next]) => {
             //setup localStorage
+            let history:string[] = []
             localStorage
             ? [
                 localStorage.getItem('history') ? history = JSON.parse(localStorage.getItem('history') as string) : console.log('nothing in history (yet)')
-                , history.length === 5 ? history.shift() : ""
-                , history.push(input)
+                , history.length === 5 ? [history.shift() , history = [...history, input] ]: history = [...history, input]
                 , localStorage.setItem('history', JSON.stringify(history))
                 , console.log(localStorage.getItem('history'))
             ]
