@@ -10,7 +10,7 @@ let   LSStatus = false
     , prevInput = ""
 
 localStorage && localStorage.getItem('history')
-? console.log("LS item exist")
+? console.log("LS exist")
 : localStorage.setItem('history', "[ ]") // first init if not exist
 
 function SHistory (sources: SHistorySources): SHistorySinks {
@@ -43,16 +43,19 @@ function SHistory (sources: SHistorySources): SHistorySinks {
 
     , vtree$ = xs.combine(updateLS$)
         .map(([update]) => {
-            console.log(history.length)
-            return div(".search-history",
-                    history.length > -1
-                    ? (JSON.parse(localStorage.getItem('history') as string))
-                        .map((item: string) => {
-                            return div({dataset: {item: item}}, item)
-                        })
-                    : div()
-                )
-            })
+            return div(".search-history",[
+                , history.length > 3 ? div("Recent Searches: ") : "" // decide if to show title
+                , div(".history-items",
+                        history.length > -1 // show items if exists
+                        ? (JSON.parse(localStorage.getItem('history') as string))
+                            .map((item: string) => {
+                                return div({dataset: {item: item}}, item)
+                            })
+                        : div()
+                    )
+                ]
+            )
+        })
 
     , sinks = {
         dom: vtree$
