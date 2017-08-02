@@ -6,6 +6,7 @@ import {makeHTTPDriver, HTTPSource, RequestOptions} from '@cycle/http'
 import Search from  './scripts/search'
 import Buttons from  './scripts/buttons'
 import './css/main.scss'
+import './css/cover.scss'
 
 interface MainSources extends Sources.dom, Sources.http{}
 interface MainSinks extends Sinks.dom,Sinks.http {}
