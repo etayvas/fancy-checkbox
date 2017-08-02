@@ -30,26 +30,37 @@ function intent(sources: SearchSources) {
         .map((count) => {
             return (count+6)
         })
+    , clickOnHistory$: sources.dom.select(".history-items div").events("click")
+        .map(event =>  {
+            return ((event.currentTarget as HTMLDivElement).getAttribute("data-item") as string ) !== null
+            ? ((event.currentTarget as HTMLDivElement).getAttribute("data-item") as string)
+            : ""
+        }
+    )
+    .startWith("")
     };
 }
+
+
 
 function Search (sources: SearchSources): SearchSinks {
     const actions = intent(sources)
     , cid= "ggX0UomnLs0VmW7qZnCzw"
-
-    , requestTrackList$ = xs.combine(actions.typedSearch$, actions.clickOnNext$)
+    //either input or history item
+    , userInput$ = xs.merge(actions.typedSearch$, actions.clickOnHistory$)
+    , requestTrackList$ = xs.combine(userInput$, actions.clickOnNext$)
         // filter if more than 2 chars
-        .filter(([input, next]) => input.length > 2)
-        .map(([input, next]) => {
+        .filter(([userInput, next]) => (userInput.length > 2))
+        .map(([userInput, next]) => {
         return {
-              url: `https://api.soundcloud.com/tracks?format=json&client_id=${cid}&q=${input}&limit=6&linked_partitioning=1&offset=${next > 0 ? next : 0 }`
+              url: `https://api.soundcloud.com/tracks?format=json&client_id=${cid}&q=${userInput}&limit=6&linked_partitioning=1&offset=${next > 0 ? next : 0 }`
             , category: "list"
             }
         })
-    , requestSingleTrack$ = xs.combine(actions.typedSearch$, actions.clickOnTrack$)
+    , requestSingleTrack$ = xs.combine(userInput$, actions.clickOnTrack$)
         // filter if more than 2 chars and we have trackId
-        .filter(([input, track]) => (input.length > 2 && track !== ""))
-        .map(([input, track]) => {
+        .filter(([userInput, track]) => (userInput.length > 2 && track !== ""))
+        .map(([userInput, track]) => {
             return {
                   url: `https://api.soundcloud.com/tracks/${track}?format=json&client_id=${cid}`
                 , category: "track"
@@ -63,8 +74,8 @@ function Search (sources: SearchSources): SearchSinks {
         .flatten()
         .map(res => res.body)
         .startWith(null)
-    , list$ = xs.combine(resList$, actions.typedSearch$)
-        .map(([list, input]) => {
+    , list$ = xs.combine(resList$)
+        .map(([list]) => {
             return list === null ? null : SetList(list.collection)
         })
     , resTrack$ = sources.http.select('track')
@@ -75,15 +86,15 @@ function Search (sources: SearchSources): SearchSinks {
             return trackData.body ? SetTrack(trackData.body) : div()
         }).startWith(div())
     , history$ = SHistory({dom: sources.dom})
-    , vtree$ = xs.combine(actions.typedSearch$, list$, resTrack$, history$.dom)
-        .map(([typedSearch, listDOM, trackDOM, historyDOM]) => {
+    , vtree$ = xs.combine(userInput$, list$, resTrack$, history$.dom)
+        .map(([userInput, listDOM, trackDOM, historyDOM]) => {
             return div(".search-holder",[
                 div('.search-field',[
                       input('.search-input',
                         {attrs: {type: 'text', name: 'search-input', placeholder: 'Type to search', value:'', autofocus:"autofocus"}})
                     ])
                 ,div('.search-results',[
-                        ...(!typedSearch
+                        ...(!userInput
                             ? [div()]
                             : [listDOM, trackDOM])
                     ])
