@@ -43,10 +43,11 @@ function SHistory (sources: SHistorySources): SHistorySinks {
 
     , vtree$ = xs.combine(updateLS$)
         .map(([update]) => {
+            let getHistory = JSON.parse(localStorage.getItem('history') as string).length // manipulate according to LS
             return div(".search-history",[
-                , history.length > 3 ? div("Recent Searches: ") : "" // decide if to show title
+                , getHistory > 0 ? div("Recent Searches: ") : "" // decide if to show title
                 , div(".history-items",
-                        history.length > -1 // show items if exists
+                        getHistory > -1 // show items if exists
                         ? (JSON.parse(localStorage.getItem('history') as string))
                             .map((item: string) => {
                                 return div({dataset: {item: item}}, item)
