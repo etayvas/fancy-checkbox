@@ -6,7 +6,6 @@ import {makeHTTPDriver, HTTPSource, RequestOptions} from '@cycle/http'
 import Search from  './scripts/search'
 import Buttons from  './scripts/buttons'
 import './css/main.scss'
-import './css/cover.scss'
 
 interface MainSources extends Sources.dom, Sources.http{}
 interface MainSinks extends Sinks.dom,Sinks.http {}
@@ -15,7 +14,6 @@ function main (sources: MainSources): MainSinks {
 
     const search$ = Search({dom: sources.dom, http: sources.http})
         , buttons$ = Buttons({dom: sources.dom})
-        //, recentSearch$ = RecentSearch({dom: sources.dom})
         , dom$ = xs.combine(search$.dom, buttons$.dom)
             .map(([searchDOM, buttonsDOM]) => {
                 return div(".main-holder", [

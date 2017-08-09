@@ -41,8 +41,6 @@ function intent(sources: SearchSources) {
     };
 }
 
-
-
 function Search (sources: SearchSources): SearchSinks {
     const actions = intent(sources)
     , cid= "ggX0UomnLs0VmW7qZnCzw"
@@ -80,11 +78,9 @@ function Search (sources: SearchSources): SearchSinks {
         })
     , resTrack$ = sources.http.select('track')
         .flatten()
-        //.map(res => { return res.body})
-        //.startWith(false)
         .map(trackData => {
             return trackData.body ? SetTrack(trackData.body) : div()
-        }).startWith(div())
+        }).startWith( div() )
     , history$ = SHistory({dom: sources.dom})
     , vtree$ = xs.combine(userInput$, list$, resTrack$, history$.dom)
         .map(([userInput, listDOM, trackDOM, historyDOM]) => {

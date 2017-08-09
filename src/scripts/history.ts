@@ -6,8 +6,8 @@ import {makeDOMDriver, DOMSource, VNode, div, button} from '@cycle/dom'
 interface SHistorySources extends Sources.dom {}
 interface SHistorySinks extends Sinks.dom {}
 
-let   LSStatus = false
-    , prevInput = ""
+let LSStatus = false
+  , prevInput = ""
 
 localStorage && localStorage.getItem('history')
 ? console.log("LS exist")
