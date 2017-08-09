@@ -6,4 +6,4 @@ webpack
 typescript
 sass
 
-<a href="https://etayvas.github.io/cs-example-cycle/index.html?">DEMO</a>
+<a target="_blank" href="https://etayvas.github.io/cs-example-cycle/index.html?">DEMO</a>
