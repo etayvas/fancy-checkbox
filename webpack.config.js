@@ -15,15 +15,7 @@ const config = {
         , publicPath: '/'
     }
     ,resolve: {
-        extensions: ['.js', '.ts', '.scss','.woff', '.woff2', '.ttf', '.eot', 'svg']
-        // ,alias: {
-        //     client: path.resolve(__dirname, "src/client"),
-        //     view: path.resolve(__dirname, "src/views"),
-        //     api: path.resolve(__dirname, "src/api"),
-        //     utils: path.resolve(__dirname, "src/utils"),
-        //     class: path.resolve(__dirname, "src/class"),
-        //     interface: path.resolve(__dirname, "src/interfaces")
-        // }
+        extensions: ['.js', '.ts', '.scss', 'svg']
     }
     ,devServer: {
         contentBase: path.resolve(__dirname, './src')
@@ -46,6 +38,12 @@ const config = {
                   test: /\.scss$/
                 , exclude: /node_modules/
                 , loader: ExtractTextPlugin.extract('css-loader!sass-loader')
+            }
+            ,{
+                  test: /\.svg$/
+                , exclude: /node_modules/
+                , loader: 'svg-url-loader'
+                , options: {}
             }
         ]
     }

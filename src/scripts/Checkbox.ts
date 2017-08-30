@@ -1,8 +1,6 @@
 import xs from "xstream"
 import {DOMSource, VNode, div} from "@cycle/dom"
 import { Sources, Sinks } from '../scripts/definitions'
-//import isolate from "@cycle/isolate"
-
 
 function classList (elem: HTMLElement): string[] {
     return elem.className.split(" ")
@@ -26,7 +24,7 @@ export default function Checkbox (sources: CheckboxSources): CheckboxSinks {
             .map(event => !hasClass(event.currentTarget as HTMLDivElement, "checked"))
         , checked$ = xs.merge(userChecked$, sources.checked$)
             .remember()
-        , dom$ = xs.combine(checked$, sources.caption$ )
+        , dom$ = xs.combine(checked$, sources.caption$)
             .map(([checked, caption]) => {
                 return div(".checkbox", {class: {checked}}, [
                     div(".checkbox_input")
@@ -38,5 +36,3 @@ export default function Checkbox (sources: CheckboxSources): CheckboxSinks {
       , checked$
     }
 }
-
-// export default sources => (isolate(Checkbox) as typeof Checkbox)(sources)

@@ -1,20 +1,21 @@
 a,
 a:focus,
 a:hover {
-  color: #fff;
+  color: #000;
 }
 
 html,
 body {
   height: 100%;
-  background-color: #333333;
+  color: #000;
 }
 
 body {
-    color: #ffffff;
+    //color: #ffffff;
     text-align: center;
     //text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
+
 #app {
     text-align: center;
 }
@@ -24,17 +25,18 @@ body {
     display: inline-block;
     vertical-align: top;
     cursor: pointer;
+    margin-right: 20px;
 }
 .checkbox_input{
     display: inline-block;
     vertical-align: middle;
     width: 24px;
     height: 24px;
-    border: 1px solid #669f00;
+    border: 1px solid #09c7ff;
 }
 .checkbox.checked > .checkbox_input{
     background-repeat: no-repeat;
-    //background-image: url("../assets/svg/tick.svg");
+    background-image: url("../assets/svg/tick.svg");
     background-size: 14px;
     background-position: center center;
 }
@@ -44,61 +46,6 @@ body {
     margin-left: 10px;
 }
 
-
-
-.search-results {
-    display: inline-flex;
-
-    .track-list {
-        padding: 25px;
-        align-self: flex-start;
-
-        div:hover{
-            background-color: white;
-            color: black;
-            cursor: pointer;
-        }
-    }
-
-    .track-data {
-    	padding: 25px;
-    	background-color: white;
-    	color: black;
-
-        .stream-status img{
-            max-width: 25px;
-            cursor:pointer;
-        }
-
-
-    }
-}
-
-.search-history{
-    margin: 10px 0;
-    .history-items div{
-        margin: 0 10px;
-        display: inline-block;
-        cursor: pointer;
-        &:hover{
-            background-color: white;
-            color: black;
-        }
-        &::before{
-            content: " // "
-        }
-        &::after{
-            content: " // "
-        }
-    }
-}
-
-
-.buttons-area{
-    button{
-        background-color: #fff
-    }
-}
 
 
 @media only screen and (max-device-width : 480px) {
