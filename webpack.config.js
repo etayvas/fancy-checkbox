@@ -15,7 +15,7 @@ const config = {
         , publicPath: '/'
     }
     ,resolve: {
-        extensions: ['.js', '.ts', '.scss','.woff', '.woff2', '.ttf', '.eot']
+        extensions: ['.js', '.ts', '.scss','.woff', '.woff2', '.ttf', '.eot', 'svg']
         // ,alias: {
         //     client: path.resolve(__dirname, "src/client"),
         //     view: path.resolve(__dirname, "src/views"),

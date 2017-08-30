@@ -18,6 +18,34 @@ body {
 #app {
     text-align: center;
 }
+
+
+.checkbox{
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+}
+.checkbox_input{
+    display: inline-block;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #669f00;
+}
+.checkbox.checked > .checkbox_input{
+    background-repeat: no-repeat;
+    //background-image: url("../assets/svg/tick.svg");
+    background-size: 14px;
+    background-position: center center;
+}
+.checkbox_caption{
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+
+
 .search-results {
     display: inline-flex;
 
